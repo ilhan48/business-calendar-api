@@ -17,7 +17,7 @@ Stop hand-rolling fragile holiday tables or maintaining complex calendar rules f
 
 We are currently onboarding early adopters with a **generous free tier**.
 
-👉 **[Join the Live Waitlist Here →](https://ilhan48.github.io/business-calendar-api/)** *(Live API & Waitlist Portal)*
+👉 **[Join the Live Waitlist & Try the Live API Here →](https://private-3mjh.onrender.com)**
 
 ---
 
@@ -34,7 +34,7 @@ We are currently onboarding early adopters with a **generous free tier**.
 
 ---
 
-## 🔌 API Preview
+## 🔌 Live API Preview
 
 ### 1. Calculate a Business Deadline (`POST /api/v1/calculate`)
 
@@ -42,7 +42,7 @@ Add (or subtract) business days from any start date and get a full breakdown of 
 
 **Request:**
 ```bash
-curl -X POST https://api.bizcal.dev/api/v1/calculate \
+curl -X POST https://private-3mjh.onrender.com/api/v1/calculate \
   -H "Content-Type: application/json" \
   -d '{
     "start_date": "2026-12-18",
@@ -77,7 +77,7 @@ curl -X POST https://api.bizcal.dev/api/v1/calculate \
 Retrieve all public holidays for a given country and year:
 
 ```bash
-curl "https://api.bizcal.dev/api/v1/holidays?country=TR&year=2026"
+curl "https://private-3mjh.onrender.com/api/v1/holidays?country=TR&year=2026"
 ```
 
 ---
@@ -92,4 +92,4 @@ The core Rust calculation engine and API server are maintained in a separate pri
 ## 📬 Contact & Early Access
 
 Want early access or have specific country/regional calendar requirements?  
-Sign up on the **[Waitlist](https://ilhan48.github.io/business-calendar-api/)** or open an issue in this repository to request a country!
+Sign up on the **[Live Waitlist](https://private-3mjh.onrender.com/#waitlist)** or open an issue in this repository to request a country!

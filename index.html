@@ -87,7 +87,7 @@
             <span class="font-mono text-xs text-zinc-500">request.sh</span>
             <button data-copy="curl-code" class="copy-btn font-mono text-xs text-zinc-500 hover:text-white transition">copy</button>
           </div>
-<pre id="curl-code" class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"><code><span class="text-fuchsia-400">curl</span> -X POST https://api.bizcal.dev/api/v1/calculate \
+<pre id="curl-code" class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"><code><span class="text-fuchsia-400">curl</span> -X POST https://private-3mjh.onrender.com/api/v1/calculate \
   -H <span class="text-emerald-400">"Content-Type: application/json"</span> \
   -d <span class="text-emerald-400">'{
     "start_date": "2026-12-18",
@@ -183,8 +183,8 @@
   </footer>
 
   <script>
-    // Configure your live backend URL here when deployed (e.g., 'https://api.yourdomain.com')
-    const API_BASE_URL = window.BIZCAL_API_URL || '';
+    // Live Render backend URL
+    const API_BASE_URL = window.BIZCAL_API_URL || 'https://private-3mjh.onrender.com';
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
