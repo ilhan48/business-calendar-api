@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BizCal API — Global Business Calendar & Deadline API</title>
+  <meta name="description" content="Calculate business days, holidays and deadlines across TR, US, UK, DE and NL with a single API call." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    .grid-bg {
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse at top, black 30%, transparent 75%);
+    }
+    .glow {
+      background: radial-gradient(600px circle at 50% 0%, rgba(99,102,241,0.25), transparent 60%);
+    }
+  </style>
+</head>
+<body class="min-h-full bg-[#0a0a0b] text-zinc-300 font-sans antialiased selection:bg-indigo-500/40">
+  <div class="pointer-events-none fixed inset-0 grid-bg"></div>
+  <div class="pointer-events-none fixed inset-x-0 top-0 h-[600px] glow"></div>
+
+  <!-- Nav -->
+  <header class="relative z-10 border-b border-white/5">
+    <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <a href="/" class="flex items-center gap-2 text-white font-semibold tracking-tight">
+        <span class="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-xs font-bold">B</span>
+        BizCal<span class="text-zinc-500 font-normal">API</span>
+      </a>
+      <div class="flex items-center gap-6 text-sm">
+        <a href="#api" class="hidden sm:inline hover:text-white transition">API</a>
+        <a href="#coverage" class="hidden sm:inline hover:text-white transition">Coverage</a>
+        <a href="https://github.com/ilhan48/business-calendar-api" target="_blank" rel="noopener noreferrer" class="hidden sm:inline hover:text-white transition">GitHub</a>
+        <a href="#waitlist" class="rounded-md bg-white px-3 py-1.5 font-medium text-black hover:bg-zinc-200 transition">Join waitlist</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="relative z-10">
+    <!-- Hero -->
+    <section class="mx-auto max-w-6xl px-6 pt-20 pb-16 text-center">
+      <div class="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-400">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        Built in Rust · sub-millisecond responses
+      </div>
+      <h1 class="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
+        The Global Business Calendar &amp; Deadline API
+        <span class="bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent">for Developers</span>
+      </h1>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-zinc-400">
+        Stop hand-rolling holiday tables. Get accurate business days, public holidays and SLA deadlines
+        for <span class="text-zinc-200">Turkey, the US, the UK, Germany and the Netherlands</span> with one HTTP call.
+      </p>
+      <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <a href="#waitlist" class="rounded-lg bg-indigo-500 px-5 py-2.5 font-medium text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400 transition">Get early access →</a>
+        <a href="#api" class="rounded-lg border border-white/10 px-5 py-2.5 font-medium text-zinc-200 hover:bg-white/5 transition">View the API</a>
+      </div>
+    </section>
+
+    <!-- Code sample -->
+    <section id="api" class="mx-auto max-w-5xl px-6 pb-20">
+      <div class="grid gap-4 lg:grid-cols-2">
+        <div class="overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-white/5 px-4 py-2.5">
+            <div class="flex gap-1.5">
+              <span class="h-3 w-3 rounded-full bg-zinc-700"></span>
+              <span class="h-3 w-3 rounded-full bg-zinc-700"></span>
+              <span class="h-3 w-3 rounded-full bg-zinc-700"></span>
+            </div>
+            <span class="font-mono text-xs text-zinc-500">request.sh</span>
+            <button data-copy="curl-code" class="copy-btn font-mono text-xs text-zinc-500 hover:text-white transition">copy</button>
+          </div>
+<pre id="curl-code" class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"><code><span class="text-fuchsia-400">curl</span> -X POST https://api.bizcal.dev/api/v1/calculate \
+  -H <span class="text-emerald-400">"Content-Type: application/json"</span> \
+  -d <span class="text-emerald-400">'{
+    "start_date": "2026-12-18",
+    "country": "DE",
+    "business_days": 5
+  }'</span></code></pre>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-white/5 px-4 py-2.5">
+            <span class="rounded bg-emerald-500/10 px-2 py-0.5 font-mono text-xs text-emerald-400">200 OK</span>
+            <span class="font-mono text-xs text-zinc-500">response.json</span>
+            <span class="font-mono text-xs text-zinc-600">0.2ms</span>
+          </div>
+<pre class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"><code>{
+  <span class="text-sky-400">"start_date"</span>: <span class="text-emerald-400">"2026-12-18"</span>,
+  <span class="text-sky-400">"country"</span>: <span class="text-emerald-400">"DE"</span>,
+  <span class="text-sky-400">"business_days"</span>: <span class="text-amber-400">5</span>,
+  <span class="text-sky-400">"deadline"</span>: <span class="text-emerald-400">"2026-12-28"</span>,
+  <span class="text-sky-400">"deadline_weekday"</span>: <span class="text-emerald-400">"Mon"</span>,
+  <span class="text-sky-400">"calendar_days"</span>: <span class="text-amber-400">10</span>,
+  <span class="text-sky-400">"weekend_days_skipped"</span>: <span class="text-amber-400">4</span>,
+  <span class="text-sky-400">"holidays_skipped"</span>: <span class="text-amber-400">1</span>,
+  <span class="text-sky-400">"holidays"</span>: [{
+    <span class="text-sky-400">"date"</span>: <span class="text-emerald-400">"2026-12-25"</span>,
+    <span class="text-sky-400">"name"</span>: <span class="text-emerald-400">"Christmas Day"</span>,
+    <span class="text-sky-400">"local_name"</span>: <span class="text-emerald-400">"Erster Weihnachtstag"</span>
+  }]
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center gap-3 font-mono text-xs text-zinc-500">
+        <span class="rounded border border-white/10 px-2 py-1"><span class="text-indigo-400">POST</span> /api/v1/calculate</span>
+        <span class="rounded border border-white/10 px-2 py-1"><span class="text-emerald-400">GET</span> /api/v1/holidays?country=TR&amp;year=2026</span>
+      </div>
+    </section>
+
+    <!-- Features / coverage -->
+    <section id="coverage" class="mx-auto max-w-6xl px-6 pb-20">
+      <div class="grid gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 sm:grid-cols-3">
+        <div class="bg-[#0a0a0b] p-6">
+          <h3 class="font-semibold text-white">Deadline math, done right</h3>
+          <p class="mt-2 text-sm text-zinc-400">Skips weekends and public holidays, including observed &amp; substitute days (US/UK).</p>
+        </div>
+        <div class="bg-[#0a0a0b] p-6">
+          <h3 class="font-semibold text-white">5 countries at launch</h3>
+          <p class="mt-2 flex flex-wrap gap-2 text-sm">
+            <span class="rounded bg-white/5 px-2 py-0.5">🇹🇷 TR</span>
+            <span class="rounded bg-white/5 px-2 py-0.5">🇺🇸 US</span>
+            <span class="rounded bg-white/5 px-2 py-0.5">🇬🇧 UK</span>
+            <span class="rounded bg-white/5 px-2 py-0.5">🇩🇪 DE</span>
+            <span class="rounded bg-white/5 px-2 py-0.5">🇳🇱 NL</span>
+          </p>
+        </div>
+        <div class="bg-[#0a0a0b] p-6">
+          <h3 class="font-semibold text-white">Blazing fast</h3>
+          <p class="mt-2 text-sm text-zinc-400">Rust + Axum + Tokio. Rules computed in-memory, no external lookups.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Waitlist -->
+    <section id="waitlist" class="mx-auto max-w-2xl px-6 pb-28">
+      <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-transparent p-8 sm:p-10 text-center">
+        <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Join the waitlist</h2>
+        <p class="mt-2 text-zinc-400">Be the first to get an API key. Free tier for early adopters.</p>
+
+        <form id="waitlist-form" class="mt-8 flex flex-col gap-3 sm:flex-row" novalidate>
+          <label for="email" class="sr-only">Email address</label>
+          <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com"
+            class="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-white placeholder-zinc-500 outline-none ring-indigo-500/50 transition focus:border-indigo-500 focus:ring-4" />
+          <button id="submit-btn" type="submit"
+            class="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60">
+            <svg id="spinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25"></circle>
+              <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="3" class="opacity-75"></path>
+            </svg>
+            <span id="btn-label">Join Waitlist</span>
+          </button>
+        </form>
+
+        <div id="form-msg" class="mt-4 hidden rounded-lg px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="relative z-10 border-t border-white/5">
+    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-6 text-xs text-zinc-500 sm:flex-row">
+      <span>© <span id="year"></span> BizCal API</span>
+      <span class="font-mono">Built with Rust 🦀 · Axum · Tokio</span>
+    </div>
+  </footer>
+
+  <script>
+    // Configure your live backend URL here when deployed (e.g., 'https://api.yourdomain.com')
+    const API_BASE_URL = window.BIZCAL_API_URL || '';
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Copy buttons
+    document.querySelectorAll('.copy-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const text = document.getElementById(btn.dataset.copy).innerText;
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = 'copied!';
+          setTimeout(() => (btn.textContent = 'copy'), 1500);
+        } catch (_) { /* clipboard unavailable */ }
+      });
+    });
+
+    // Waitlist form (AJAX)
+    const form = document.getElementById('waitlist-form');
+    const input = document.getElementById('email');
+    const btn = document.getElementById('submit-btn');
+    const spinner = document.getElementById('spinner');
+    const label = document.getElementById('btn-label');
+    const msg = document.getElementById('form-msg');
+
+    function showMessage(text, ok) {
+      msg.textContent = text;
+      msg.className = 'mt-4 rounded-lg px-4 py-3 text-sm ' + (ok
+        ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+        : 'border border-red-500/30 bg-red-500/10 text-red-300');
+    }
+
+    function setLoading(loading) {
+      btn.disabled = loading;
+      spinner.classList.toggle('hidden', !loading);
+      label.textContent = loading ? 'Joining…' : 'Join Waitlist';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = input.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showMessage('Please enter a valid email address.', false);
+        input.focus();
+        return;
+      }
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/waitlist`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          showMessage('🎉 ' + (data.message || "You're on the list!"), true);
+          form.reset();
+        } else {
+          showMessage(data.error || 'Something went wrong. Please try again.', false);
+        }
+      } catch (_) {
+        showMessage('Network error. Please use the live waitlist site to register.', false);
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
