@@ -1,235 +1,441 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BizCal API — Global Business Calendar & Deadline API</title>
-  <meta name="description" content="Calculate business days, holidays and deadlines across TR, US, UK, DE and NL with a single API call." />
+  <title>BizCal — Business Day &amp; Holiday Settlement API</title>
+  <meta name="description" content="Deterministic business day, settlement date, and statutory holiday calculation API for TR, US, UK, DE, and NL." />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+            sans: ['"IBM Plex Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
           },
+          colors: {
+            paper: '#FAF9F5',
+            surface: '#F3F1EC',
+            ink: '#141413',
+            muted: '#5C5B56',
+            line: '#DFDDD4',
+            accent: '#1D4ED8',
+          }
         },
       },
     };
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    .grid-bg {
-      background-image:
-        linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse at top, black 30%, transparent 75%);
+    body {
+      background-color: #FAF9F5;
+      color: #141413;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
-    .glow {
-      background: radial-gradient(600px circle at 50% 0%, rgba(99,102,241,0.25), transparent 60%);
+    .tabular {
+      font-variant-numeric: tabular-nums;
     }
   </style>
 </head>
-<body class="min-h-full bg-[#0a0a0b] text-zinc-300 font-sans antialiased selection:bg-indigo-500/40">
-  <div class="pointer-events-none fixed inset-0 grid-bg"></div>
-  <div class="pointer-events-none fixed inset-x-0 top-0 h-[600px] glow"></div>
+<body class="min-h-screen font-sans antialiased selection:bg-ink selection:text-paper">
 
-  <!-- Nav -->
-  <header class="relative z-10 border-b border-white/5">
-    <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-      <a href="/" class="flex items-center gap-2 text-white font-semibold tracking-tight">
-        <span class="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-xs font-bold">B</span>
-        BizCal<span class="text-zinc-500 font-normal">API</span>
-      </a>
-      <div class="flex items-center gap-6 text-sm">
-        <a href="#api" class="hidden sm:inline hover:text-white transition">API</a>
-        <a href="#coverage" class="hidden sm:inline hover:text-white transition">Coverage</a>
-        <a href="https://github.com/ilhan48/business-calendar-api" target="_blank" rel="noopener noreferrer" class="hidden sm:inline hover:text-white transition">GitHub</a>
-        <a href="#waitlist" class="rounded-md bg-white px-3 py-1.5 font-medium text-black hover:bg-zinc-200 transition">Join waitlist</a>
+  <!-- Top Technical Bar -->
+  <header class="border-b border-line bg-paper">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div class="flex items-center gap-6">
+        <a href="/" class="font-mono text-sm font-semibold tracking-tight text-ink">
+          BIZCAL<span class="text-muted font-normal">/API</span>
+        </a>
+        <span class="hidden sm:inline-block h-3.5 w-px bg-line"></span>
+        <span class="hidden sm:inline-block font-mono text-xs text-muted">v1.0 · ISO-8601 Settlement Calendar Engine</span>
       </div>
-    </nav>
+      <nav class="flex items-center gap-6 text-xs font-mono">
+        <a href="#playground" class="text-muted hover:text-ink transition">PLAYGROUND</a>
+        <a href="#jurisdictions" class="hidden sm:inline text-muted hover:text-ink transition">JURISDICTIONS</a>
+        <a href="#spec" class="hidden sm:inline text-muted hover:text-ink transition">SPEC</a>
+        <a href="https://github.com/ilhan48/business-calendar-api" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-ink transition">GITHUB</a>
+        <a href="#access" class="border border-ink bg-ink px-3 py-1.5 text-paper hover:bg-transparent hover:text-ink transition">
+          REQUEST ACCESS
+        </a>
+      </nav>
+    </div>
   </header>
 
-  <main class="relative z-10">
-    <!-- Hero -->
-    <section class="mx-auto max-w-6xl px-6 pt-20 pb-16 text-center">
-      <div class="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-400">
-        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        Built in Rust · sub-millisecond responses
-      </div>
-      <h1 class="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
-        The Global Business Calendar &amp; Deadline API
-        <span class="bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent">for Developers</span>
-      </h1>
-      <p class="mx-auto mt-6 max-w-2xl text-lg text-zinc-400">
-        Stop hand-rolling holiday tables. Get accurate business days, public holidays and SLA deadlines
-        for <span class="text-zinc-200">Turkey, the US, the UK, Germany and the Netherlands</span> with one HTTP call.
-      </p>
-      <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <a href="#waitlist" class="rounded-lg bg-indigo-500 px-5 py-2.5 font-medium text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400 transition">Get early access →</a>
-        <a href="#api" class="rounded-lg border border-white/10 px-5 py-2.5 font-medium text-zinc-200 hover:bg-white/5 transition">View the API</a>
-      </div>
-    </section>
+  <main class="mx-auto max-w-6xl px-6">
 
-    <!-- Code sample -->
-    <section id="api" class="mx-auto max-w-5xl px-6 pb-20">
-      <div class="grid gap-4 lg:grid-cols-2">
-        <div class="overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80 shadow-2xl">
-          <div class="flex items-center justify-between border-b border-white/5 px-4 py-2.5">
-            <div class="flex gap-1.5">
-              <span class="h-3 w-3 rounded-full bg-zinc-700"></span>
-              <span class="h-3 w-3 rounded-full bg-zinc-700"></span>
-              <span class="h-3 w-3 rounded-full bg-zinc-700"></span>
-            </div>
-            <span class="font-mono text-xs text-zinc-500">request.sh</span>
-            <button data-copy="curl-code" class="copy-btn font-mono text-xs text-zinc-500 hover:text-white transition">copy</button>
+    <!-- Section 01: Editorial Header + Early Access Form -->
+    <section class="grid gap-12 border-b border-line py-14 lg:grid-cols-12 lg:items-start">
+      <div class="lg:col-span-7">
+        <div class="mb-3 font-mono text-xs uppercase tracking-widest text-muted">
+          SECTION 01 // OVERVIEW
+        </div>
+        <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl lg:leading-[1.15]">
+          Deterministic business day and statutory holiday math over HTTP.
+        </h1>
+        <p class="mt-4 max-w-2xl text-base leading-relaxed text-muted">
+          Financial settlement, SLA tracking, and ERP invoicing break when holiday calendars are maintained by hand.
+          BizCal computes working-day offsets across fixed holidays, Easter-offset dates, hijri lunar shifts,
+          and weekend substitute rules in under a millisecond.
+        </p>
+
+        <dl class="mt-8 grid grid-cols-3 border-t border-line pt-6 font-mono text-xs">
+          <div>
+            <dt class="text-muted">RUNTIME</dt>
+            <dd class="mt-1 font-semibold text-ink">Rust / Axum (In-Memory)</dd>
           </div>
-<pre id="curl-code" class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"><code><span class="text-fuchsia-400">curl</span> -X POST https://private-3mjh.onrender.com/api/v1/calculate \
-  -H <span class="text-emerald-400">"Content-Type: application/json"</span> \
-  -d <span class="text-emerald-400">'{
-    "start_date": "2026-12-18",
-    "country": "DE",
-    "business_days": 5
-  }'</span></code></pre>
-        </div>
-
-        <div class="overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80 shadow-2xl">
-          <div class="flex items-center justify-between border-b border-white/5 px-4 py-2.5">
-            <span class="rounded bg-emerald-500/10 px-2 py-0.5 font-mono text-xs text-emerald-400">200 OK</span>
-            <span class="font-mono text-xs text-zinc-500">response.json</span>
-            <span class="font-mono text-xs text-zinc-600">0.2ms</span>
+          <div>
+            <dt class="text-muted">CALENDAR RANGE</dt>
+            <dd class="mt-1 font-semibold text-ink tabular">1970 — 2100</dd>
           </div>
-<pre class="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed"><code>{
-  <span class="text-sky-400">"start_date"</span>: <span class="text-emerald-400">"2026-12-18"</span>,
-  <span class="text-sky-400">"country"</span>: <span class="text-emerald-400">"DE"</span>,
-  <span class="text-sky-400">"business_days"</span>: <span class="text-amber-400">5</span>,
-  <span class="text-sky-400">"deadline"</span>: <span class="text-emerald-400">"2026-12-28"</span>,
-  <span class="text-sky-400">"deadline_weekday"</span>: <span class="text-emerald-400">"Mon"</span>,
-  <span class="text-sky-400">"calendar_days"</span>: <span class="text-amber-400">10</span>,
-  <span class="text-sky-400">"weekend_days_skipped"</span>: <span class="text-amber-400">4</span>,
-  <span class="text-sky-400">"holidays_skipped"</span>: <span class="text-amber-400">1</span>,
-  <span class="text-sky-400">"holidays"</span>: [{
-    <span class="text-sky-400">"date"</span>: <span class="text-emerald-400">"2026-12-25"</span>,
-    <span class="text-sky-400">"name"</span>: <span class="text-emerald-400">"Christmas Day"</span>,
-    <span class="text-sky-400">"local_name"</span>: <span class="text-emerald-400">"Erster Weihnachtstag"</span>
-  }]
-}</code></pre>
-        </div>
+          <div>
+            <dt class="text-muted">JURISDICTIONS</dt>
+            <dd class="mt-1 font-semibold text-ink">TR · US · UK · DE · NL</dd>
+          </div>
+        </dl>
       </div>
 
-      <div class="mt-4 flex flex-wrap items-center gap-3 font-mono text-xs text-zinc-500">
-        <span class="rounded border border-white/10 px-2 py-1"><span class="text-indigo-400">POST</span> /api/v1/calculate</span>
-        <span class="rounded border border-white/10 px-2 py-1"><span class="text-emerald-400">GET</span> /api/v1/holidays?country=TR&amp;year=2026</span>
-      </div>
-    </section>
-
-    <!-- Features / coverage -->
-    <section id="coverage" class="mx-auto max-w-6xl px-6 pb-20">
-      <div class="grid gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 sm:grid-cols-3">
-        <div class="bg-[#0a0a0b] p-6">
-          <h3 class="font-semibold text-white">Deadline math, done right</h3>
-          <p class="mt-2 text-sm text-zinc-400">Skips weekends and public holidays, including observed &amp; substitute days (US/UK).</p>
+      <!-- Waitlist / Access Box -->
+      <div id="access" class="border border-line bg-surface p-6 lg:col-span-5">
+        <div class="flex items-center justify-between border-b border-line pb-3 font-mono text-xs">
+          <span class="font-semibold text-ink">EARLY ACCESS QUEUE</span>
+          <span class="text-muted">PRODUCTION KEYS</span>
         </div>
-        <div class="bg-[#0a0a0b] p-6">
-          <h3 class="font-semibold text-white">5 countries at launch</h3>
-          <p class="mt-2 flex flex-wrap gap-2 text-sm">
-            <span class="rounded bg-white/5 px-2 py-0.5">🇹🇷 TR</span>
-            <span class="rounded bg-white/5 px-2 py-0.5">🇺🇸 US</span>
-            <span class="rounded bg-white/5 px-2 py-0.5">🇬🇧 UK</span>
-            <span class="rounded bg-white/5 px-2 py-0.5">🇩🇪 DE</span>
-            <span class="rounded bg-white/5 px-2 py-0.5">🇳🇱 NL</span>
-          </p>
-        </div>
-        <div class="bg-[#0a0a0b] p-6">
-          <h3 class="font-semibold text-white">Blazing fast</h3>
-          <p class="mt-2 text-sm text-zinc-400">Rust + Axum + Tokio. Rules computed in-memory, no external lookups.</p>
-        </div>
-      </div>
-    </section>
+        <p class="mt-3 text-sm leading-relaxed text-muted">
+          The public endpoint below is open for evaluation. Register your work email to receive a dedicated API key and higher rate limits when v1 billing launches.
+        </p>
 
-    <!-- Waitlist -->
-    <section id="waitlist" class="mx-auto max-w-2xl px-6 pb-28">
-      <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-transparent p-8 sm:p-10 text-center">
-        <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Join the waitlist</h2>
-        <p class="mt-2 text-zinc-400">Be the first to get an API key. Free tier for early adopters.</p>
-
-        <form id="waitlist-form" class="mt-8 flex flex-col gap-3 sm:flex-row" novalidate>
-          <label for="email" class="sr-only">Email address</label>
-          <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com"
-            class="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-white placeholder-zinc-500 outline-none ring-indigo-500/50 transition focus:border-indigo-500 focus:ring-4" />
-          <button id="submit-btn" type="submit"
-            class="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60">
-            <svg id="spinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25"></circle>
-              <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="3" class="opacity-75"></path>
-            </svg>
-            <span id="btn-label">Join Waitlist</span>
+        <form id="waitlist-form" class="mt-5 space-y-3" novalidate>
+          <div>
+            <label for="email" class="block font-mono text-[11px] uppercase text-muted mb-1.5">Developer or Work Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autocomplete="email"
+              placeholder="name@domain.com"
+              class="w-full border border-line bg-paper px-3.5 py-2.5 font-mono text-sm text-ink placeholder-muted/60 outline-none focus:border-ink"
+            />
+          </div>
+          <button
+            id="submit-btn"
+            type="submit"
+            class="w-full border border-ink bg-ink px-4 py-2.5 font-mono text-xs font-medium uppercase tracking-wider text-paper transition hover:bg-paper hover:text-ink disabled:opacity-50"
+          >
+            <span id="btn-label">Register for API Key</span>
           </button>
         </form>
 
-        <div id="form-msg" class="mt-4 hidden rounded-lg px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+        <div id="form-msg" class="mt-3 hidden border px-3 py-2 font-mono text-xs" role="status" aria-live="polite"></div>
+
+        <p class="mt-3 font-mono text-[11px] text-muted">
+          No marketing newsletter. Used strictly for API key provisioning.
+        </p>
       </div>
     </section>
+
+    <!-- Section 02: Interactive Live API Workbench -->
+    <section id="playground" class="border-b border-line py-14">
+      <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-end mb-6">
+        <div>
+          <div class="font-mono text-xs uppercase tracking-widest text-muted">
+            SECTION 02 // LIVE ENDPOINT INSPECTOR
+          </div>
+          <h2 class="mt-1 text-xl font-semibold text-ink">
+            Test against the live Rust server
+          </h2>
+        </div>
+        <div class="font-mono text-xs text-muted">
+          ENDPOINT: <code class="bg-surface px-1.5 py-0.5 text-ink">POST /api/v1/calculate</code>
+        </div>
+      </div>
+
+      <div class="grid border border-line lg:grid-cols-12">
+        <!-- Controls + cURL -->
+        <div class="border-b border-line p-6 lg:col-span-5 lg:border-b-0 lg:border-r">
+          <div class="font-mono text-xs font-semibold uppercase text-ink mb-4">Request Parameters</div>
+
+          <form id="calc-form" class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="calc-country" class="block font-mono text-[11px] uppercase text-muted mb-1">Country (ISO)</label>
+                <select id="calc-country" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink">
+                  <option value="TR">TR — Turkey</option>
+                  <option value="DE" selected>DE — Germany</option>
+                  <option value="US">US — United States</option>
+                  <option value="UK">UK — United Kingdom</option>
+                  <option value="NL">NL — Netherlands</option>
+                </select>
+              </div>
+              <div>
+                <label for="calc-days" class="block font-mono text-[11px] uppercase text-muted mb-1">Business Days</label>
+                <input id="calc-days" type="number" min="1" max="3650" value="5" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink tabular" />
+              </div>
+            </div>
+
+            <div>
+              <label for="calc-start" class="block font-mono text-[11px] uppercase text-muted mb-1">Start Date (YYYY-MM-DD)</label>
+              <input id="calc-start" type="date" value="2026-12-18" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink tabular" />
+            </div>
+
+            <button type="submit" id="calc-btn" class="w-full border border-ink bg-paper px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wider text-ink hover:bg-ink hover:text-paper transition">
+              Execute Request →
+            </button>
+          </form>
+
+          <div class="mt-6 border-t border-line pt-4">
+            <div class="flex items-center justify-between font-mono text-[11px] text-muted mb-2">
+              <span>EQUIVALENT CURL</span>
+              <button type="button" id="copy-curl-btn" class="underline hover:text-ink">copy</button>
+            </div>
+            <pre id="curl-preview" class="overflow-x-auto bg-surface p-3 font-mono text-[11px] leading-relaxed text-ink border border-line"></pre>
+          </div>
+        </div>
+
+        <!-- Live Response Output -->
+        <div class="bg-surface p-6 lg:col-span-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-line pb-3 font-mono text-xs">
+              <span class="font-semibold text-ink">HTTP RESPONSE PAYLOAD</span>
+              <div class="flex items-center gap-3 tabular">
+                <span id="resp-status" class="border border-ink px-1.5 py-0.5 text-[11px] font-medium text-ink">200 OK</span>
+                <span id="resp-latency" class="text-muted">— ms</span>
+              </div>
+            </div>
+            <pre id="calc-output" class="mt-4 overflow-x-auto font-mono text-xs leading-relaxed text-ink">{
+  "start_date": "2026-12-18",
+  "country": "DE",
+  "business_days": 5,
+  "deadline": "2026-12-28",
+  "deadline_weekday": "Mon",
+  "calendar_days": 10,
+  "weekend_days_skipped": 4,
+  "holidays_skipped": 1,
+  "holidays": [
+    {
+      "date": "2026-12-25",
+      "name": "Christmas Day",
+      "local_name": "Erster Weihnachtstag"
+    }
+  ]
+}</pre>
+          </div>
+
+          <div class="mt-6 border-t border-line pt-3 flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-muted">
+            <span>Content-Type: application/json</span>
+            <span> Try <code class="text-ink">TR</code> + <code class="text-ink">2026-05-26</code> (+1 day) to test Kurban Bayrami skip</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 03: Jurisdiction Rule Coverage Table -->
+    <section id="jurisdictions" class="border-b border-line py-14">
+      <div class="mb-6">
+        <div class="font-mono text-xs uppercase tracking-widest text-muted">
+          SECTION 03 // STATUTORY RULE COVERAGE
+        </div>
+        <h2 class="mt-1 text-xl font-semibold text-ink">
+          Supported Jurisdictions &amp; Edge-Case Rules
+        </h2>
+      </div>
+
+      <div class="overflow-x-auto border border-line">
+        <table class="w-full text-left border-collapse font-mono text-xs">
+          <thead>
+            <tr class="border-b border-line bg-surface text-muted uppercase">
+              <th class="py-3 px-4 font-medium">Code</th>
+              <th class="py-3 px-4 font-medium">Jurisdiction</th>
+              <th class="py-3 px-4 font-medium">Moveable / Lunar Rules</th>
+              <th class="py-3 px-4 font-medium">Weekend Substitute Policy</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-ink">TR</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">Turkey</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Ramazan Bayrami (3d) &amp; Kurban Bayrami (4d) astronomical tables</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">No weekday rollover for fixed civic holidays</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-ink">US</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">United States (Federal)</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Nth-weekday rules (MLK, Memorial, Labor, Columbus, Thanksgiving)</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Saturday observed Friday; Sunday observed Monday (5 U.S.C. 6103)</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-ink">UK</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">United Kingdom (England &amp; Wales)</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Good Friday, Easter Monday, Early May &amp; Spring/August Bank Holidays</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Royal proclamation substitute Monday/Tuesday when Christmas/Boxing Day hit weekend</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-ink">DE</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">Germany (Bundeseinheitlich)</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Computus Easter offsets: Karfreitag (-2d), Ostermontag (+1d), Christi Himmelfahrt (+39d), Pfingstmontag (+50d)</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Statutory holidays falling on weekend are not shifted</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-ink">NL</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">Netherlands</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Goede Vrijdag, Tweede Paasdag, Hemelvaartsdag, Tweede Pinksterdag</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Koningsdag (Apr 27) shifts to Saturday Apr 26 when Apr 27 is Sunday</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 04: Endpoint Specification -->
+    <section id="spec" class="py-14">
+      <div class="mb-6">
+        <div class="font-mono text-xs uppercase tracking-widest text-muted">
+          SECTION 04 // HTTP SPECIFICATION
+        </div>
+        <h2 class="mt-1 text-xl font-semibold text-ink">
+          Endpoints
+        </h2>
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="border border-line p-5">
+          <div class="font-mono text-xs">
+            <span class="bg-ink text-paper px-1.5 py-0.5 font-medium">POST</span>
+            <span class="ml-2 font-semibold text-ink">/api/v1/calculate</span>
+          </div>
+          <p class="mt-2.5 text-sm text-muted">
+            Advances <code class="font-mono text-xs text-ink">start_date</code> by <code class="font-mono text-xs text-ink">business_days</code> working days (1–3650), skipping Saturdays, Sundays, and official holidays for <code class="font-mono text-xs text-ink">country</code>. Returns exact skipped holiday records.
+          </p>
+        </div>
+
+        <div class="border border-line p-5">
+          <div class="font-mono text-xs">
+            <span class="border border-ink text-ink px-1.5 py-0.5 font-medium">GET</span>
+            <span class="ml-2 font-semibold text-ink">/api/v1/holidays?country=TR&amp;year=2026</span>
+          </div>
+          <p class="mt-2.5 text-sm text-muted">
+            Returns the chronological list of statutory holidays for a given country code and calendar year (<code class="font-mono text-xs text-ink">1970..=2100</code>), including localized names.
+          </p>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <footer class="relative z-10 border-t border-white/5">
-    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-6 text-xs text-zinc-500 sm:flex-row">
-      <span>© <span id="year"></span> BizCal API</span>
-      <span class="font-mono">Built with Rust 🦀 · Axum · Tokio</span>
+  <footer class="border-t border-line bg-surface">
+    <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-2 px-6 py-6 font-mono text-xs text-muted sm:flex-row sm:items-center">
+      <span>BIZCAL API · DETERMINISTIC CALENDAR ENGINE</span>
+      <div class="flex gap-6">
+        <a href="https://github.com/ilhan48/business-calendar-api" target="_blank" rel="noopener noreferrer" class="hover:text-ink">GitHub Repository</a>
+        <span>Status: Operational</span>
+      </div>
     </div>
   </footer>
 
   <script>
-    // Live Render backend URL
-    const API_BASE_URL = window.BIZCAL_API_URL || 'https://private-3mjh.onrender.com';
+    // If hosted on GitHub Pages, send API calls to the live Render backend.
+    // If served directly by the Rust binary on Render, relative URLs work automatically.
+    const DEFAULT_BACKEND = 'https://private-3mjh.onrender.com';
+    const API_BASE_URL = window.BIZCAL_API_URL || (
+      window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:'
+        ? DEFAULT_BACKEND
+        : ''
+    );
+    const DISPLAY_BASE_URL = API_BASE_URL || window.location.origin;
 
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // --- Interactive Playground ---
+    const calcForm = document.getElementById('calc-form');
+    const countryInput = document.getElementById('calc-country');
+    const daysInput = document.getElementById('calc-days');
+    const startInput = document.getElementById('calc-start');
+    const curlPreview = document.getElementById('curl-preview');
+    const calcOutput = document.getElementById('calc-output');
+    const respStatus = document.getElementById('resp-status');
+    const respLatency = document.getElementById('resp-latency');
+    const calcBtn = document.getElementById('calc-btn');
+    const copyCurlBtn = document.getElementById('copy-curl-btn');
 
-    // Copy buttons
-    document.querySelectorAll('.copy-btn').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const text = document.getElementById(btn.dataset.copy).innerText;
-        try {
-          await navigator.clipboard.writeText(text);
-          btn.textContent = 'copied!';
-          setTimeout(() => (btn.textContent = 'copy'), 1500);
-        } catch (_) { /* clipboard unavailable */ }
-      });
+    function updateCurlPreview() {
+      const payload = {
+        start_date: startInput.value || '2026-12-18',
+        country: countryInput.value || 'DE',
+        business_days: Number(daysInput.value) || 5,
+      };
+      curlPreview.textContent =
+`curl -X POST ${DISPLAY_BASE_URL}/api/v1/calculate \\
+  -H "Content-Type: application/json" \\
+  -d '${JSON.stringify(payload)}'`;
+    }
+
+    countryInput.addEventListener('change', updateCurlPreview);
+    daysInput.addEventListener('input', updateCurlPreview);
+    startInput.addEventListener('input', updateCurlPreview);
+    updateCurlPreview();
+
+    copyCurlBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(curlPreview.textContent);
+        copyCurlBtn.textContent = 'copied';
+        setTimeout(() => (copyCurlBtn.textContent = 'copy'), 1500);
+      } catch (_) {}
     });
 
-    // Waitlist form (AJAX)
+    calcForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      calcBtn.disabled = true;
+      calcBtn.textContent = 'Executing...';
+      const t0 = performance.now();
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/calculate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            start_date: startInput.value,
+            country: countryInput.value,
+            business_days: Number(daysInput.value),
+          }),
+        });
+        const elapsed = (performance.now() - t0).toFixed(1);
+        const data = await res.json();
+        respStatus.textContent = `${res.status} ${res.ok ? 'OK' : 'ERR'}`;
+        respLatency.textContent = `${elapsed} ms`;
+        calcOutput.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        respStatus.textContent = 'NET ERR';
+        calcOutput.textContent = JSON.stringify({ error: 'Could not reach backend server. If on free tier, wait a few seconds for cold start and retry.' }, null, 2);
+      } finally {
+        calcBtn.disabled = false;
+        calcBtn.textContent = 'Execute Request →';
+      }
+    });
+
+    // --- Waitlist Form ---
     const form = document.getElementById('waitlist-form');
     const input = document.getElementById('email');
     const btn = document.getElementById('submit-btn');
-    const spinner = document.getElementById('spinner');
     const label = document.getElementById('btn-label');
     const msg = document.getElementById('form-msg');
 
     function showMessage(text, ok) {
       msg.textContent = text;
-      msg.className = 'mt-4 rounded-lg px-4 py-3 text-sm ' + (ok
-        ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-        : 'border border-red-500/30 bg-red-500/10 text-red-300');
-    }
-
-    function setLoading(loading) {
-      btn.disabled = loading;
-      spinner.classList.toggle('hidden', !loading);
-      label.textContent = loading ? 'Joining…' : 'Join Waitlist';
+      msg.className = 'mt-3 border px-3 py-2 font-mono text-xs ' + (ok
+        ? 'border-ink bg-paper text-ink'
+        : 'border-red-700 bg-red-50 text-red-800');
     }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = input.value.trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showMessage('Please enter a valid email address.', false);
+        showMessage('ERROR: Enter a valid email address.', false);
         input.focus();
         return;
       }
-      setLoading(true);
+      btn.disabled = true;
+      label.textContent = 'Submitting...';
       try {
         const res = await fetch(`${API_BASE_URL}/api/v1/waitlist`, {
           method: 'POST',
@@ -238,15 +444,16 @@
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok) {
-          showMessage('🎉 ' + (data.message || "You're on the list!"), true);
+          showMessage('OK: ' + (data.message || 'Email registered.'), true);
           form.reset();
         } else {
-          showMessage(data.error || 'Something went wrong. Please try again.', false);
+          showMessage('ERROR: ' + (data.error || 'Request failed.'), false);
         }
       } catch (_) {
-        showMessage('Network error. Please use the live waitlist site to register.', false);
+        showMessage('ERROR: Network failure. Server may be waking up, please retry in 10s.', false);
       } finally {
-        setLoading(false);
+        btn.disabled = false;
+        label.textContent = 'Register for API Key';
       }
     });
   </script>
