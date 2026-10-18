@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BizCal — Business Day &amp; Holiday Settlement API</title>
-  <meta name="description" content="Deterministic business day, settlement date, and statutory holiday calculation API for TR, US, UK, DE, and NL." />
+  <title>BizCal — Business Day, Half-Day &amp; Holiday Settlement API</title>
+  <meta name="description" content="Deterministic business day, half-day (Arife / early close), settlement date, and statutory holiday calculation API for TR, US, UK, DE, and NL." />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -20,7 +20,6 @@
             ink: '#141413',
             muted: '#5C5B56',
             line: '#DFDDD4',
-            accent: '#1D4ED8',
           }
         },
       },
@@ -42,56 +41,67 @@
 </head>
 <body class="min-h-screen font-sans antialiased selection:bg-ink selection:text-paper">
 
-  <!-- Top Technical Bar -->
-  <header class="border-b border-line bg-paper">
-    <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-      <div class="flex items-center gap-6">
+  <!-- Top Technical Bar + 5-Country Language Selector -->
+  <header class="border-b border-line bg-paper sticky top-0 z-20">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-3.5">
+      <div class="flex items-center gap-5">
         <a href="/" class="font-mono text-sm font-semibold tracking-tight text-ink">
           BIZCAL<span class="text-muted font-normal">/API</span>
         </a>
-        <span class="hidden sm:inline-block h-3.5 w-px bg-line"></span>
-        <span class="hidden sm:inline-block font-mono text-xs text-muted">v1.0 · ISO-8601 Settlement Calendar Engine</span>
+        <span class="hidden md:inline-block h-3.5 w-px bg-line"></span>
+        <span data-i18n="tagline" class="hidden md:inline-block font-mono text-xs text-muted">
+          v1.1 · ISO-8601 Settlement &amp; Half-Day Calendar Engine
+        </span>
       </div>
-      <nav class="flex items-center gap-6 text-xs font-mono">
-        <a href="#playground" class="text-muted hover:text-ink transition">PLAYGROUND</a>
-        <a href="#jurisdictions" class="hidden sm:inline text-muted hover:text-ink transition">JURISDICTIONS</a>
-        <a href="#spec" class="hidden sm:inline text-muted hover:text-ink transition">SPEC</a>
-        <a href="https://github.com/ilhan48/business-calendar-api" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-ink transition">GITHUB</a>
-        <a href="#access" class="border border-ink bg-ink px-3 py-1.5 text-paper hover:bg-transparent hover:text-ink transition">
-          REQUEST ACCESS
-        </a>
-      </nav>
+
+      <div class="flex items-center gap-4">
+        <!-- 5 Country Locale Switcher -->
+        <div class="flex items-center border border-line bg-surface font-mono text-[11px]" role="group" aria-label="Language & Country Selector">
+          <button type="button" data-locale="TR" class="locale-btn px-2.5 py-1 text-muted hover:text-ink transition">TR</button>
+          <button type="button" data-locale="US" class="locale-btn border-l border-line px-2.5 py-1 bg-ink text-paper transition">US</button>
+          <button type="button" data-locale="UK" class="locale-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink transition">UK</button>
+          <button type="button" data-locale="DE" class="locale-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink transition">DE</button>
+          <button type="button" data-locale="NL" class="locale-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink transition">NL</button>
+        </div>
+
+        <nav class="hidden sm:flex items-center gap-5 text-xs font-mono">
+          <a href="#playground" data-i18n="nav_playground" class="text-muted hover:text-ink transition">PLAYGROUND</a>
+          <a href="#jurisdictions" data-i18n="nav_rules" class="text-muted hover:text-ink transition">RULES</a>
+          <a href="https://github.com/ilhan48/business-calendar-api" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-ink transition">GITHUB</a>
+          <a href="#access" data-i18n="nav_access" class="border border-ink bg-ink px-3 py-1 text-paper hover:bg-transparent hover:text-ink transition">
+            API KEY
+          </a>
+        </nav>
+      </div>
     </div>
   </header>
 
   <main class="mx-auto max-w-6xl px-6">
 
-    <!-- Section 01: Editorial Header + Early Access Form -->
-    <section class="grid gap-12 border-b border-line py-14 lg:grid-cols-12 lg:items-start">
+    <!-- Section 01: Editorial Header + Early Access Queue -->
+    <section class="grid gap-12 border-b border-line py-12 lg:grid-cols-12 lg:items-start">
       <div class="lg:col-span-7">
-        <div class="mb-3 font-mono text-xs uppercase tracking-widest text-muted">
+        <div data-i18n="sec1_label" class="mb-3 font-mono text-xs uppercase tracking-widest text-muted">
           SECTION 01 // OVERVIEW
         </div>
-        <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl lg:leading-[1.15]">
-          Deterministic business day and statutory holiday math over HTTP.
+        <h1 data-i18n="hero_title" class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl lg:leading-[1.15]">
+          Deterministic business day, half-day, and statutory holiday math over HTTP.
         </h1>
-        <p class="mt-4 max-w-2xl text-base leading-relaxed text-muted">
-          Financial settlement, SLA tracking, and ERP invoicing break when holiday calendars are maintained by hand.
-          BizCal computes working-day offsets across fixed holidays, Easter-offset dates, hijri lunar shifts,
-          and weekend substitute rules in under a millisecond.
+        <p data-i18n="hero_desc" class="mt-4 max-w-2xl text-base leading-relaxed text-muted">
+          Financial settlement, SLA tracking, and ERP invoicing fail when holiday tables and half-day eve sessions are maintained by hand. BizCal computes working-day offsets and date-range breakdowns across fixed holidays, Easter offsets, hijri lunar shifts, and half-day sessions in under a millisecond.
         </p>
 
-        <dl class="mt-8 grid grid-cols-3 border-t border-line pt-6 font-mono text-xs">
+        <dl class="mt-8 grid grid-cols-3 border-t border-line pt-5 font-mono text-xs">
           <div>
-            <dt class="text-muted">RUNTIME</dt>
+            <dt data-i18n="stat_runtime_label" class="text-muted">RUNTIME</dt>
             <dd class="mt-1 font-semibold text-ink">Rust / Axum (In-Memory)</dd>
           </div>
           <div>
-            <dt class="text-muted">CALENDAR RANGE</dt>
-            <dd class="mt-1 font-semibold text-ink tabular">1970 — 2100</dd>
+            <dt data-i18n="stat_halfday_label" class="text-muted">HALF-DAY ENGINE</dt>
+            <dd data-i18n="stat_halfday_val" class="mt-1 font-semibold text-ink">0.5d Arife &amp; Early Close</dd>
           </div>
           <div>
-            <dt class="text-muted">JURISDICTIONS</dt>
+            <dt data-i18n="stat_countries_label" class="text-muted">JURISDICTIONS</dt>
             <dd class="mt-1 font-semibold text-ink">TR · US · UK · DE · NL</dd>
           </div>
         </dl>
@@ -100,16 +110,16 @@
       <!-- Waitlist / Access Box -->
       <div id="access" class="border border-line bg-surface p-6 lg:col-span-5">
         <div class="flex items-center justify-between border-b border-line pb-3 font-mono text-xs">
-          <span class="font-semibold text-ink">EARLY ACCESS QUEUE</span>
-          <span class="text-muted">PRODUCTION KEYS</span>
+          <span data-i18n="waitlist_title" class="font-semibold text-ink">EARLY ACCESS QUEUE</span>
+          <span data-i18n="waitlist_badge" class="text-muted">PRODUCTION KEYS</span>
         </div>
-        <p class="mt-3 text-sm leading-relaxed text-muted">
-          The public endpoint below is open for evaluation. Register your work email to receive a dedicated API key and higher rate limits when v1 billing launches.
+        <p data-i18n="waitlist_desc" class="mt-3 text-sm leading-relaxed text-muted">
+          The live endpoint below is open for testing. Register your work email to receive a dedicated API key and higher rate limits.
         </p>
 
         <form id="waitlist-form" class="mt-5 space-y-3" novalidate>
           <div>
-            <label for="email" class="block font-mono text-[11px] uppercase text-muted mb-1.5">Developer or Work Email</label>
+            <label for="email" data-i18n="waitlist_email_label" class="block font-mono text-[11px] uppercase text-muted mb-1.5">Developer or Work Email</label>
             <input
               id="email"
               name="email"
@@ -125,27 +135,27 @@
             type="submit"
             class="w-full border border-ink bg-ink px-4 py-2.5 font-mono text-xs font-medium uppercase tracking-wider text-paper transition hover:bg-paper hover:text-ink disabled:opacity-50"
           >
-            <span id="btn-label">Register for API Key</span>
+            <span id="btn-label" data-i18n="waitlist_btn">Register for API Key</span>
           </button>
         </form>
 
         <div id="form-msg" class="mt-3 hidden border px-3 py-2 font-mono text-xs" role="status" aria-live="polite"></div>
 
-        <p class="mt-3 font-mono text-[11px] text-muted">
+        <p data-i18n="waitlist_note" class="mt-3 font-mono text-[11px] text-muted">
           No marketing newsletter. Used strictly for API key provisioning.
         </p>
       </div>
     </section>
 
-    <!-- Section 02: Interactive Live API Workbench -->
-    <section id="playground" class="border-b border-line py-14">
+    <!-- Section 02: Interactive Live API Workbench (Date Range + Add Days + Table + Raw JSON) -->
+    <section id="playground" class="border-b border-line py-12">
       <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-end mb-6">
         <div>
-          <div class="font-mono text-xs uppercase tracking-widest text-muted">
+          <div data-i18n="sec2_label" class="font-mono text-xs uppercase tracking-widest text-muted">
             SECTION 02 // LIVE ENDPOINT INSPECTOR
           </div>
-          <h2 class="mt-1 text-xl font-semibold text-ink">
-            Test against the live Rust server
+          <h2 data-i18n="sec2_title" class="mt-1 text-xl font-semibold text-ink">
+            Test Date Range or Deadline Calculation
           </h2>
         </div>
         <div class="font-mono text-xs text-muted">
@@ -154,37 +164,74 @@
       </div>
 
       <div class="grid border border-line lg:grid-cols-12">
-        <!-- Controls + cURL -->
-        <div class="border-b border-line p-6 lg:col-span-5 lg:border-b-0 lg:border-r">
-          <div class="font-mono text-xs font-semibold uppercase text-ink mb-4">Request Parameters</div>
+        <!-- Left Column: Mode Switcher + Parameters + cURL -->
+        <div class="border-b border-line p-6 lg:col-span-5 lg:border-b-0 lg:border-r flex flex-col justify-between">
+          <div>
+            <!-- Mode Tabs -->
+            <div class="grid grid-cols-2 border border-line bg-surface p-0.5 font-mono text-xs mb-5">
+              <button type="button" id="mode-range-btn" class="py-2 px-3 font-medium bg-ink text-paper transition" data-i18n="mode_range">
+                Date Range (Start → End)
+              </button>
+              <button type="button" id="mode-add-btn" class="py-2 px-3 font-medium text-muted hover:text-ink transition" data-i18n="mode_add">
+                Add Days (+N Days)
+              </button>
+            </div>
 
-          <form id="calc-form" class="space-y-4">
-            <div class="grid grid-cols-2 gap-3">
+            <form id="calc-form" class="space-y-4">
               <div>
-                <label for="calc-country" class="block font-mono text-[11px] uppercase text-muted mb-1">Country (ISO)</label>
+                <label for="calc-country" data-i18n="label_country" class="block font-mono text-[11px] uppercase text-muted mb-1">Country (ISO)</label>
                 <select id="calc-country" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink">
-                  <option value="TR">TR — Turkey</option>
-                  <option value="DE" selected>DE — Germany</option>
-                  <option value="US">US — United States</option>
-                  <option value="UK">UK — United Kingdom</option>
-                  <option value="NL">NL — Netherlands</option>
+                  <option value="TR">TR — Turkey (incl. Arife Half-Days)</option>
+                  <option value="DE">DE — Germany (incl. Heiligabend / Silvester)</option>
+                  <option value="US" selected>US — United States (incl. Black Friday / Eves)</option>
+                  <option value="UK">UK — United Kingdom (incl. Christmas / NY Eve)</option>
+                  <option value="NL">NL — Netherlands (incl. Sinterklaas / Eves)</option>
                 </select>
               </div>
-              <div>
-                <label for="calc-days" class="block font-mono text-[11px] uppercase text-muted mb-1">Business Days</label>
-                <input id="calc-days" type="number" min="1" max="3650" value="5" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink tabular" />
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="calc-start" data-i18n="label_start" class="block font-mono text-[11px] uppercase text-muted mb-1">Start Date</label>
+                  <input id="calc-start" type="date" value="2026-10-26" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink tabular" />
+                </div>
+
+                <!-- Shown in Date Range Mode -->
+                <div id="end-date-wrap">
+                  <label for="calc-end" data-i18n="label_end" class="block font-mono text-[11px] uppercase text-muted mb-1">End Date</label>
+                  <input id="calc-end" type="date" value="2026-10-30" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink tabular" />
+                </div>
+
+                <!-- Shown in Add Business Days Mode -->
+                <div id="add-days-wrap" class="hidden">
+                  <label for="calc-days" data-i18n="label_days" class="block font-mono text-[11px] uppercase text-muted mb-1">Business Days</label>
+                  <input id="calc-days" type="number" min="1" max="3650" value="5" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink tabular" />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label for="calc-start" class="block font-mono text-[11px] uppercase text-muted mb-1">Start Date (YYYY-MM-DD)</label>
-              <input id="calc-start" type="date" value="2026-12-18" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink tabular" />
-            </div>
+              <!-- Quick Presets -->
+              <div class="pt-1">
+                <div data-i18n="presets_label" class="font-mono text-[11px] uppercase text-muted mb-1.5">Quick Half-Day Test Presets</div>
+                <div class="flex flex-wrap gap-1.5 font-mono text-[11px]">
+                  <button type="button" data-preset="TR,2026-10-26,2026-10-30" class="preset-btn border border-line bg-surface px-2 py-1 text-ink hover:border-ink">
+                    TR: 28-29 Oct (Arife + Cumhuriyet)
+                  </button>
+                  <button type="button" data-preset="TR,2026-05-25,2026-06-01" class="preset-btn border border-line bg-surface px-2 py-1 text-ink hover:border-ink">
+                    TR: Kurban Bayramı + Arife
+                  </button>
+                  <button type="button" data-preset="DE,2026-12-21,2026-12-31" class="preset-btn border border-line bg-surface px-2 py-1 text-ink hover:border-ink">
+                    DE: Heiligabend &amp; Silvester
+                  </button>
+                  <button type="button" data-preset="US,2026-11-23,2026-11-27" class="preset-btn border border-line bg-surface px-2 py-1 text-ink hover:border-ink">
+                    US: Thanksgiving + Black Friday
+                  </button>
+                </div>
+              </div>
 
-            <button type="submit" id="calc-btn" class="w-full border border-ink bg-paper px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wider text-ink hover:bg-ink hover:text-paper transition">
-              Execute Request →
-            </button>
-          </form>
+              <button type="submit" id="calc-btn" data-i18n="btn_execute" class="w-full border border-ink bg-ink px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wider text-paper hover:bg-paper hover:text-ink transition">
+                Execute Request →
+              </button>
+            </form>
+          </div>
 
           <div class="mt-6 border-t border-line pt-4">
             <div class="flex items-center justify-between font-mono text-[11px] text-muted mb-2">
@@ -195,51 +242,88 @@
           </div>
         </div>
 
-        <!-- Live Response Output -->
-        <div class="bg-surface p-6 lg:col-span-7 flex flex-col justify-between">
+        <!-- Right Column: Tabulated Result View + Raw JSON -->
+        <div class="bg-surface p-6 lg:col-span-7 flex flex-col justify-between space-y-6">
           <div>
+            <!-- Status Header -->
             <div class="flex items-center justify-between border-b border-line pb-3 font-mono text-xs">
-              <span class="font-semibold text-ink">HTTP RESPONSE PAYLOAD</span>
+              <span data-i18n="result_header" class="font-semibold text-ink">TABULATED RESPONSE &amp; JSON</span>
               <div class="flex items-center gap-3 tabular">
-                <span id="resp-status" class="border border-ink px-1.5 py-0.5 text-[11px] font-medium text-ink">200 OK</span>
+                <span id="resp-status" class="border border-ink bg-paper px-1.5 py-0.5 text-[11px] font-medium text-ink">200 OK</span>
                 <span id="resp-latency" class="text-muted">— ms</span>
               </div>
             </div>
-            <pre id="calc-output" class="mt-4 overflow-x-auto font-mono text-xs leading-relaxed text-ink">{
-  "start_date": "2026-12-18",
-  "country": "DE",
-  "business_days": 5,
-  "deadline": "2026-12-28",
-  "deadline_weekday": "Mon",
-  "calendar_days": 10,
-  "weekend_days_skipped": 4,
-  "holidays_skipped": 1,
-  "holidays": [
-    {
-      "date": "2026-12-25",
-      "name": "Christmas Day",
-      "local_name": "Erster Weihnachtstag"
-    }
-  ]
-}</pre>
-          </div>
 
-          <div class="mt-6 border-t border-line pt-3 flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-muted">
-            <span>Content-Type: application/json</span>
-            <span> Try <code class="text-ink">TR</code> + <code class="text-ink">2026-05-26</code> (+1 day) to test Kurban Bayrami skip</span>
+            <!-- 1. Tabulated Summary Metrics -->
+            <div class="mt-4 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-3 font-mono">
+              <div class="bg-paper p-3">
+                <div data-i18n="kpi_net_days" class="text-[10px] uppercase text-muted">NET BUSINESS DAYS</div>
+                <div id="kpi-effective" class="mt-1 text-lg font-semibold text-ink tabular">3.5</div>
+              </div>
+              <div class="bg-paper p-3">
+                <div data-i18n="kpi_half_days" class="text-[10px] uppercase text-muted">HALF-DAYS (0.5d)</div>
+                <div id="kpi-half" class="mt-1 text-lg font-semibold text-ink tabular">1</div>
+              </div>
+              <div class="bg-paper p-3">
+                <div data-i18n="kpi_full_holidays" class="text-[10px] uppercase text-muted">FULL HOLIDAYS</div>
+                <div id="kpi-holidays" class="mt-1 text-lg font-semibold text-ink tabular">1</div>
+              </div>
+              <div class="bg-paper p-3">
+                <div data-i18n="kpi_weekends" class="text-[10px] uppercase text-muted">WEEKEND DAYS</div>
+                <div id="kpi-weekends" class="mt-1 text-sm font-semibold text-ink tabular">0</div>
+              </div>
+              <div class="bg-paper p-3">
+                <div data-i18n="kpi_calendar" class="text-[10px] uppercase text-muted">CALENDAR DAYS</div>
+                <div id="kpi-calendar" class="mt-1 text-sm font-semibold text-ink tabular">5</div>
+              </div>
+              <div class="bg-paper p-3">
+                <div data-i18n="kpi_end_date" class="text-[10px] uppercase text-muted">END / DEADLINE</div>
+                <div id="kpi-deadline" class="mt-1 text-sm font-semibold text-ink tabular">2026-10-30 (Fri)</div>
+              </div>
+            </div>
+
+            <!-- 2. Detected Holidays & Half-Days Table -->
+            <div class="mt-5">
+              <div data-i18n="table_detected_title" class="font-mono text-[11px] font-semibold uppercase text-ink mb-2">
+                Detected Holidays &amp; Half-Days in Span
+              </div>
+              <div class="overflow-x-auto border border-line bg-paper">
+                <table class="w-full text-left border-collapse font-mono text-xs">
+                  <thead>
+                    <tr class="border-b border-line bg-surface text-[11px] text-muted uppercase">
+                      <th data-i18n="th_date" class="py-2 px-3">Date</th>
+                      <th data-i18n="th_type" class="py-2 px-3">Session Type</th>
+                      <th data-i18n="th_local" class="py-2 px-3">Local Name</th>
+                      <th data-i18n="th_intl" class="py-2 px-3">International Name</th>
+                    </tr>
+                  </thead>
+                  <tbody id="holidays-table-body" class="divide-y divide-line">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- 3. Raw JSON Output -->
+            <div class="mt-5">
+              <div class="flex items-center justify-between font-mono text-[11px] text-muted mb-1.5">
+                <span>RAW JSON PAYLOAD (response.json)</span>
+                <button type="button" id="copy-json-btn" class="underline hover:text-ink">copy json</button>
+              </div>
+              <pre id="calc-output" class="max-h-56 overflow-y-auto overflow-x-auto border border-line bg-paper p-3.5 font-mono text-[11px] leading-relaxed text-ink"></pre>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Section 03: Jurisdiction Rule Coverage Table -->
-    <section id="jurisdictions" class="border-b border-line py-14">
+    <!-- Section 03: Jurisdiction Rule Coverage Table (Full + Half Days) -->
+    <section id="jurisdictions" class="border-b border-line py-12">
       <div class="mb-6">
-        <div class="font-mono text-xs uppercase tracking-widest text-muted">
-          SECTION 03 // STATUTORY RULE COVERAGE
+        <div data-i18n="sec3_label" class="font-mono text-xs uppercase tracking-widest text-muted">
+          SECTION 03 // STATUTORY &amp; HALF-DAY COVERAGE
         </div>
-        <h2 class="mt-1 text-xl font-semibold text-ink">
-          Supported Jurisdictions &amp; Edge-Case Rules
+        <h2 data-i18n="sec3_title" class="mt-1 text-xl font-semibold text-ink">
+          Supported Jurisdictions, Moveable Feasts &amp; Half-Day Rules
         </h2>
       </div>
 
@@ -248,78 +332,44 @@
           <thead>
             <tr class="border-b border-line bg-surface text-muted uppercase">
               <th class="py-3 px-4 font-medium">Code</th>
-              <th class="py-3 px-4 font-medium">Jurisdiction</th>
-              <th class="py-3 px-4 font-medium">Moveable / Lunar Rules</th>
-              <th class="py-3 px-4 font-medium">Weekend Substitute Policy</th>
+              <th data-i18n="cov_th_country" class="py-3 px-4 font-medium">Jurisdiction</th>
+              <th data-i18n="cov_th_full" class="py-3 px-4 font-medium">Full-Day Statutory Rules</th>
+              <th data-i18n="cov_th_half" class="py-3 px-4 font-medium">Half-Day (0.5d) Detection</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-line">
             <tr>
               <td class="py-3.5 px-4 font-semibold text-ink">TR</td>
               <td class="py-3.5 px-4 font-sans text-sm text-ink">Turkey</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Ramazan Bayrami (3d) &amp; Kurban Bayrami (4d) astronomical tables</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">No weekday rollover for fixed civic holidays</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">Civic holidays + Diyanet Ramazan Bayramı (3d) &amp; Kurban Bayramı (4d)</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">28 Oct Republic Eve, Ramazan Bayramı Arifesi, Kurban Bayramı Arifesi</td>
             </tr>
             <tr>
               <td class="py-3.5 px-4 font-semibold text-ink">US</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">United States (Federal)</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Nth-weekday rules (MLK, Memorial, Labor, Columbus, Thanksgiving)</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Saturday observed Friday; Sunday observed Monday (5 U.S.C. 6103)</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">United States</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">11 Federal holidays + 5 U.S.C. 6103 Fri/Mon weekend observance</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">Black Friday (Day after Thanksgiving), Christmas Eve, New Year's Eve</td>
             </tr>
             <tr>
               <td class="py-3.5 px-4 font-semibold text-ink">UK</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">United Kingdom (England &amp; Wales)</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Good Friday, Easter Monday, Early May &amp; Spring/August Bank Holidays</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Royal proclamation substitute Monday/Tuesday when Christmas/Boxing Day hit weekend</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">United Kingdom</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">8 England &amp; Wales Bank Holidays + Royal substitute weekdays</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">Christmas Eve (24 Dec), New Year's Eve (31 Dec)</td>
             </tr>
             <tr>
               <td class="py-3.5 px-4 font-semibold text-ink">DE</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">Germany (Bundeseinheitlich)</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Computus Easter offsets: Karfreitag (-2d), Ostermontag (+1d), Christi Himmelfahrt (+39d), Pfingstmontag (+50d)</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Statutory holidays falling on weekend are not shifted</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">Germany</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">9 Nationwide holidays + Computus Easter offsets (-2d, +1d, +39d, +50d)</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">Heiligabend (24 Dec), Silvester (31 Dec)</td>
             </tr>
             <tr>
               <td class="py-3.5 px-4 font-semibold text-ink">NL</td>
               <td class="py-3.5 px-4 font-sans text-sm text-ink">Netherlands</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Goede Vrijdag, Tweede Paasdag, Hemelvaartsdag, Tweede Pinksterdag</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Koningsdag (Apr 27) shifts to Saturday Apr 26 when Apr 27 is Sunday</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-muted">National holidays + Koningsdag Sunday-to-Saturday rule + lustrum 5 May</td>
+              <td class="py-3.5 px-4 font-sans text-sm text-ink">Sinterklaasavond (5 Dec), Kerstavond (24 Dec), Oudejaarsavond (31 Dec)</td>
             </tr>
           </tbody>
         </table>
-      </div>
-    </section>
-
-    <!-- Section 04: Endpoint Specification -->
-    <section id="spec" class="py-14">
-      <div class="mb-6">
-        <div class="font-mono text-xs uppercase tracking-widest text-muted">
-          SECTION 04 // HTTP SPECIFICATION
-        </div>
-        <h2 class="mt-1 text-xl font-semibold text-ink">
-          Endpoints
-        </h2>
-      </div>
-
-      <div class="grid gap-6 md:grid-cols-2">
-        <div class="border border-line p-5">
-          <div class="font-mono text-xs">
-            <span class="bg-ink text-paper px-1.5 py-0.5 font-medium">POST</span>
-            <span class="ml-2 font-semibold text-ink">/api/v1/calculate</span>
-          </div>
-          <p class="mt-2.5 text-sm text-muted">
-            Advances <code class="font-mono text-xs text-ink">start_date</code> by <code class="font-mono text-xs text-ink">business_days</code> working days (1–3650), skipping Saturdays, Sundays, and official holidays for <code class="font-mono text-xs text-ink">country</code>. Returns exact skipped holiday records.
-          </p>
-        </div>
-
-        <div class="border border-line p-5">
-          <div class="font-mono text-xs">
-            <span class="border border-ink text-ink px-1.5 py-0.5 font-medium">GET</span>
-            <span class="ml-2 font-semibold text-ink">/api/v1/holidays?country=TR&amp;year=2026</span>
-          </div>
-          <p class="mt-2.5 text-sm text-muted">
-            Returns the chronological list of statutory holidays for a given country code and calendar year (<code class="font-mono text-xs text-ink">1970..=2100</code>), including localized names.
-          </p>
-        </div>
       </div>
     </section>
 
@@ -336,8 +386,6 @@
   </footer>
 
   <script>
-    // If hosted on GitHub Pages, send API calls to the live Render backend.
-    // If served directly by the Rust binary on Render, relative URLs work automatically.
     const DEFAULT_BACKEND = 'https://private-3mjh.onrender.com';
     const API_BASE_URL = window.BIZCAL_API_URL || (
       window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:'
@@ -346,24 +394,343 @@
     );
     const DISPLAY_BASE_URL = API_BASE_URL || window.location.origin;
 
-    // --- Interactive Playground ---
+    // --- 5-Country Localization Dictionary (TR, US, UK, DE, NL) ---
+    const I18N = {
+      TR: {
+        tagline: 'v1.1 · ISO-8601 İş Günü, Arife (Yarım Gün) ve Resmi Tatil Motoru',
+        nav_playground: 'CANLI TEST',
+        nav_rules: 'KURALLAR',
+        nav_access: 'API ANAHTARI',
+        sec1_label: 'BÖLÜM 01 // GENEL BAKIŞ',
+        hero_title: 'HTTP üzerinden deterministik iş günü, yarım gün (Arife) ve resmi tatil hesaplaması.',
+        hero_desc: 'Finansal valör, SLA takibi ve fatura vade hesaplamaları elle tutulan tatil tablolarında hataya açıktır. BizCal; sabit tatilleri, Paskalya kaymalarını, Diyanet hicri bayramlarını ve 0.5 günlük Arife / erken kapanış günlerini milisaniyenin altında hesaplar.',
+        stat_runtime_label: 'ÇALIŞMA ORTAMI',
+        stat_halfday_label: 'YARIM GÜN MOTORU',
+        stat_halfday_val: '0.5g Arife & Erken Kapanış',
+        stat_countries_label: 'ÜLKELER',
+        waitlist_title: 'ERKEN ERİŞİM LİSTESİ',
+        waitlist_badge: 'ÜRETİM ANAHTARI',
+        waitlist_desc: 'Aşağıdaki canlı uç nokta test için açıktır. Özel API anahtarı ve yüksek istek limiti almak için iş e-postanızı kaydedin.',
+        waitlist_email_label: 'Geliştirici veya İş E-Postası',
+        waitlist_btn: 'API Anahtarı İçin Kaydol',
+        waitlist_note: 'Spam bülten gönderilmez. Sadece API anahtarı tanımlaması için kullanılır.',
+        sec2_label: 'BÖLÜM 02 // CANLI UÇ NOKTA TESTİ',
+        sec2_title: 'Tarih Aralığı veya Vade (Deadline) Hesapla',
+        mode_range: 'Tarih Aralığı (Başlangıç → Bitiş)',
+        mode_add: 'İş Günü Ekle (+N Gün)',
+        label_country: 'Ülke Kodu (ISO)',
+        label_start: 'Başlangıç Tarihi',
+        label_end: 'Bitiş Tarihi',
+        label_days: 'Eklenecek İş Günü',
+        presets_label: 'Hızlı Yarım Gün / Arife Test Senaryoları',
+        btn_execute: 'Sorguyu Çalıştır →',
+        result_header: 'TABLOLAŞTIRILMIŞ YANIT & JSON',
+        kpi_net_days: 'NET İŞ GÜNÜ',
+        kpi_half_days: 'YARIM GÜN (0.5g)',
+        kpi_full_holidays: 'TAM GÜN TATİL',
+        kpi_weekends: 'HAFTA SONU',
+        kpi_calendar: 'TAKVİM GÜNÜ',
+        kpi_end_date: 'BİTİŞ / VADE TARİHİ',
+        table_detected_title: 'Aralıkta Tespit Edilen Resmi Tatiller ve Yarım Günler',
+        th_date: 'Tarih',
+        th_type: 'Gün Türü',
+        th_local: 'Yerel Adı',
+        th_intl: 'Uluslararası Adı',
+        badge_half: 'YARIM GÜN (0.5g)',
+        badge_full: 'TAM GÜN TATİL',
+        empty_holidays: 'Bu tarih aralığında hafta içine denk gelen resmi tatil veya yarım gün bulunmuyor.',
+        sec3_label: 'BÖLÜM 03 // YASAL & YARIM GÜN KAPSAMI',
+        sec3_title: 'Desteklenen Ülkeler, Dini/Hareketli Tatiller ve Yarım Gün Kuralları',
+        cov_th_country: 'Ülke',
+        cov_th_full: 'Tam Gün Resmi Tatil Kuralları',
+        cov_th_half: 'Yarım Gün (0.5g) Tespiti',
+      },
+      US: {
+        tagline: 'v1.1 · ISO-8601 Settlement & Half-Day Calendar Engine',
+        nav_playground: 'PLAYGROUND',
+        nav_rules: 'RULES',
+        nav_access: 'API KEY',
+        sec1_label: 'SECTION 01 // OVERVIEW',
+        hero_title: 'Deterministic business day, half-day, and statutory holiday math over HTTP.',
+        hero_desc: 'Financial settlement, SLA tracking, and ERP invoicing fail when holiday tables and half-day eve sessions are maintained by hand. BizCal computes working-day offsets and date-range breakdowns across fixed holidays, Easter offsets, hijri lunar shifts, and half-day sessions in under a millisecond.',
+        stat_runtime_label: 'RUNTIME',
+        stat_halfday_label: 'HALF-DAY ENGINE',
+        stat_halfday_val: '0.5d Arife & Early Close',
+        stat_countries_label: 'JURISDICTIONS',
+        waitlist_title: 'EARLY ACCESS QUEUE',
+        waitlist_badge: 'PRODUCTION KEYS',
+        waitlist_desc: 'The live endpoint below is open for testing. Register your work email to receive a dedicated API key and higher rate limits.',
+        waitlist_email_label: 'Developer or Work Email',
+        waitlist_btn: 'Register for API Key',
+        waitlist_note: 'No marketing newsletter. Used strictly for API key provisioning.',
+        sec2_label: 'SECTION 02 // LIVE ENDPOINT INSPECTOR',
+        sec2_title: 'Test Date Range or Deadline Calculation',
+        mode_range: 'Date Range (Start → End)',
+        mode_add: 'Add Days (+N Days)',
+        label_country: 'Country (ISO)',
+        label_start: 'Start Date',
+        label_end: 'End Date',
+        label_days: 'Business Days',
+        presets_label: 'Quick Half-Day Test Presets',
+        btn_execute: 'Execute Request →',
+        result_header: 'TABULATED RESPONSE & JSON',
+        kpi_net_days: 'NET BUSINESS DAYS',
+        kpi_half_days: 'HALF-DAYS (0.5d)',
+        kpi_full_holidays: 'FULL HOLIDAYS',
+        kpi_weekends: 'WEEKEND DAYS',
+        kpi_calendar: 'CALENDAR DAYS',
+        kpi_end_date: 'END / DEADLINE',
+        table_detected_title: 'Detected Holidays & Half-Days in Span',
+        th_date: 'Date',
+        th_type: 'Session Type',
+        th_local: 'Local Name',
+        th_intl: 'International Name',
+        badge_half: 'HALF DAY (0.5d)',
+        badge_full: 'FULL HOLIDAY',
+        empty_holidays: 'No weekday statutory holidays or half-days in this date span.',
+        sec3_label: 'SECTION 03 // STATUTORY & HALF-DAY COVERAGE',
+        sec3_title: 'Supported Jurisdictions, Moveable Feasts & Half-Day Rules',
+        cov_th_country: 'Jurisdiction',
+        cov_th_full: 'Full-Day Statutory Rules',
+        cov_th_half: 'Half-Day (0.5d) Detection',
+      },
+      UK: {
+        tagline: 'v1.1 · ISO-8601 Bank Holiday & Half-Day Settlement Engine',
+        nav_playground: 'PLAYGROUND',
+        nav_rules: 'RULES',
+        nav_access: 'API KEY',
+        sec1_label: 'SECTION 01 // OVERVIEW',
+        hero_title: 'Deterministic business day, half-day, and bank holiday calculation over HTTP.',
+        hero_desc: 'Settlement dates, SLA clocks, and commercial invoicing break when bank holiday tables and early-close eves are maintained manually. BizCal computes working-day offsets and date-range counts across UK substitute days, European calendars, and half-day sessions in sub-millisecond time.',
+        stat_runtime_label: 'RUNTIME',
+        stat_halfday_label: 'HALF-DAY ENGINE',
+        stat_halfday_val: '0.5d Eve & Early Close',
+        stat_countries_label: 'JURISDICTIONS',
+        waitlist_title: 'EARLY ACCESS QUEUE',
+        waitlist_badge: 'PRODUCTION KEYS',
+        waitlist_desc: 'The live endpoint below is open for evaluation. Register your work email to receive a dedicated API key and production rate limits.',
+        waitlist_email_label: 'Developer or Work Email',
+        waitlist_btn: 'Register for API Key',
+        waitlist_note: 'No marketing emails. Used strictly for API key provisioning.',
+        sec2_label: 'SECTION 02 // LIVE ENDPOINT INSPECTOR',
+        sec2_title: 'Test Date Range or Settlement Deadline',
+        mode_range: 'Date Range (Start → End)',
+        mode_add: 'Add Days (+N Days)',
+        label_country: 'Country (ISO)',
+        label_start: 'Start Date',
+        label_end: 'End Date',
+        label_days: 'Business Days',
+        presets_label: 'Quick Half-Day Test Presets',
+        btn_execute: 'Execute Request →',
+        result_header: 'TABULATED RESPONSE & JSON',
+        kpi_net_days: 'NET BUSINESS DAYS',
+        kpi_half_days: 'HALF-DAYS (0.5d)',
+        kpi_full_holidays: 'FULL HOLIDAYS',
+        kpi_weekends: 'WEEKEND DAYS',
+        kpi_calendar: 'CALENDAR DAYS',
+        kpi_end_date: 'END / DEADLINE',
+        table_detected_title: 'Detected Bank Holidays & Half-Days in Span',
+        th_date: 'Date',
+        th_type: 'Session Type',
+        th_local: 'Local Name',
+        th_intl: 'International Name',
+        badge_half: 'HALF DAY (0.5d)',
+        badge_full: 'FULL HOLIDAY',
+        empty_holidays: 'No weekday bank holidays or half-days in this date span.',
+        sec3_label: 'SECTION 03 // STATUTORY & HALF-DAY COVERAGE',
+        sec3_title: 'Supported Jurisdictions, Moveable Feasts & Half-Day Rules',
+        cov_th_country: 'Jurisdiction',
+        cov_th_full: 'Full-Day Statutory Rules',
+        cov_th_half: 'Half-Day (0.5d) Detection',
+      },
+      DE: {
+        tagline: 'v1.1 · ISO-8601 Werktags-, Halfeiertags- & Feiertags-Engine',
+        nav_playground: 'LIVE-TEST',
+        nav_rules: 'REGELWERK',
+        nav_access: 'API-KEY',
+        sec1_label: 'ABSCHNITT 01 // ÜBERBLICK',
+        hero_title: 'Deterministische Werktags-, Halfeiertags- und Feiertagsberechnung über HTTP.',
+        hero_desc: 'Zahlungsziele, SLA-Fristen und ERP-Abrechnungen scheitern an manuell gepflegten Feiertagstabellen. BizCal berechnet Arbeitstage, Datumsbereiche, bewegliche Osterfeiertage sowie halbe Arbeitstage (Heiligabend, Silvester, Arife) in unter einer Millisekunde.',
+        stat_runtime_label: 'LAUFZEIT',
+        stat_halfday_label: 'HALBTAGS-ENGINE',
+        stat_halfday_val: '0,5T Heiligabend / Silvester',
+        stat_countries_label: 'LÄNDER',
+        waitlist_title: 'EARLY-ACCESS-WARTELISTE',
+        waitlist_badge: 'PRODUKTIONS-KEYS',
+        waitlist_desc: 'Der Live-Endpunkt unten ist zum Testen geöffnet. Registrieren Sie Ihre geschäftliche E-Mail für einen dedizierten API-Schlüssel.',
+        waitlist_email_label: 'Entwickler- oder Geschäfts-E-Mail',
+        waitlist_btn: 'Für API-Key registrieren',
+        waitlist_note: 'Kein Marketing-Newsletter. Nur für die API-Key-Vergabe.',
+        sec2_label: 'ABSCHNITT 02 // LIVE-ENDPUNKT-INSPEKTOR',
+        sec2_title: 'Datumsbereich oder Frist (Deadline) testen',
+        mode_range: 'Datumsbereich (Start → Ende)',
+        mode_add: 'Arbeitstage (+N Tage)',
+        label_country: 'Land (ISO)',
+        label_start: 'Startdatum',
+        label_end: 'Enddatum',
+        label_days: 'Arbeitstage',
+        presets_label: 'Schnelltest für halbe Arbeitstage',
+        btn_execute: 'Anfrage ausführen →',
+        result_header: 'TABELLENANSICHT & JSON',
+        kpi_net_days: 'NETTO-ARBEITSTAGE',
+        kpi_half_days: 'HALBE TAGE (0.5d)',
+        kpi_full_holidays: 'GANZE FEIERTAGE',
+        kpi_weekends: 'WOCHENENDTAGE',
+        kpi_calendar: 'KALENDERTAGE',
+        kpi_end_date: 'ENDE / FRIST',
+        table_detected_title: 'Erkannte Feiertage & halbe Arbeitstage im Zeitraum',
+        th_date: 'Datum',
+        th_type: 'Typ',
+        th_local: 'Lokaler Name',
+        th_intl: 'Internationaler Name',
+        badge_half: 'HALBER TAG (0.5d)',
+        badge_full: 'FEIERTAG (VOLL)',
+        empty_holidays: 'Keine Feiertage oder halben Arbeitstage an Werktagen in diesem Zeitraum.',
+        sec3_label: 'ABSCHNITT 03 // GESETZLICHE ABDECKUNG',
+        sec3_title: 'Unterstützte Länder, bewegliche Feiertage & Halbtagsregeln',
+        cov_th_country: 'Land',
+        cov_th_full: 'Gesetzliche Feiertagsregeln',
+        cov_th_half: 'Halbtagserkennung (0.5d)',
+      },
+      NL: {
+        tagline: 'v1.1 · ISO-8601 Werkdagen-, Halve-Dagen- & Feestdagen-API',
+        nav_playground: 'LIVE-TEST',
+        nav_rules: 'REGELS',
+        nav_access: 'API-SLEUTEL',
+        sec1_label: 'SECTIE 01 // OVERZICHT',
+        hero_title: 'Deterministische berekening van werkdagen, halve dagen en feestdagen via HTTP.',
+        hero_desc: 'Betalingstermijnen, SLA-deadlines en ERP-facturatie lopen vast bij handmatig bijgehouden feestdagen. BizCal berekent werkdagen, datumbereiken, Paas-feestdagen en halve werkdagen (Sinterklaasavond, Kerstavond, Oudejaarsavond) in minder dan een milliseconde.',
+        stat_runtime_label: 'RUNTIME',
+        stat_halfday_label: 'HALVE-DAGEN-ENGINE',
+        stat_halfday_val: '0,5d Avond & Vroege Sluiting',
+        stat_countries_label: 'LANDEN',
+        waitlist_title: 'EARLY ACCESS WACHTLIJST',
+        waitlist_badge: 'PRODUCTIE-SLEUTELS',
+        waitlist_desc: 'Het live endpoint hieronder is open voor evaluatie. Registreer uw zakelijke e-mail voor een eigen API-sleutel.',
+        waitlist_email_label: 'Ontwikkelaars- of werk-e-mail',
+        waitlist_btn: 'Registreer voor API-sleutel',
+        waitlist_note: 'Geen nieuwsbrief. Uitsluitend voor het verstrekken van API-sleutels.',
+        sec2_label: 'SECTIE 02 // LIVE ENDPOINT INSPECTOR',
+        sec2_title: 'Test Datumbereik of Deadline-berekening',
+        mode_range: 'Datumbereik (Start → Eind)',
+        mode_add: 'Werkdagen optellen (+N)',
+        label_country: 'Land (ISO)',
+        label_start: 'Startdatum',
+        label_end: 'Einddatum',
+        label_days: 'Werkdagen',
+        presets_label: 'Sneltesten voor halve werkdagen',
+        btn_execute: 'Verzoek uitvoeren →',
+        result_header: 'TABELWEERGAVE & JSON',
+        kpi_net_days: 'NETTO WERKDAGEN',
+        kpi_half_days: 'HALVE DAGEN (0.5d)',
+        kpi_full_holidays: 'HELE FEESTDAGEN',
+        kpi_weekends: 'WEEKENDDAGEN',
+        kpi_calendar: 'KALENDERDAGEN',
+        kpi_end_date: 'EIND / DEADLINE',
+        table_detected_title: 'Gedetecteerde feestdagen & halve dagen in periode',
+        th_date: 'Datum',
+        th_type: 'Type',
+        th_local: 'Lokale naam',
+        th_intl: 'Internationale naam',
+        badge_half: 'HALVE DAG (0.5d)',
+        badge_full: 'FEESTDAG (VOL)',
+        empty_holidays: 'Geen doordeweekse feestdagen of halve dagen in deze periode.',
+        sec3_label: 'SECTIE 03 // WETTELIJKE DEKKING',
+        sec3_title: 'Ondersteunde landen, feestdagen & halve-dagregels',
+        cov_th_country: 'Land',
+        cov_th_full: 'Wettelijke feestdagen',
+        cov_th_half: 'Halve-dagdetectie (0.5d)',
+      }
+    };
+
+    let currentLocale = 'US';
+    let currentMode = 'range'; // 'range' | 'add'
+
     const calcForm = document.getElementById('calc-form');
     const countryInput = document.getElementById('calc-country');
     const daysInput = document.getElementById('calc-days');
     const startInput = document.getElementById('calc-start');
+    const endInput = document.getElementById('calc-end');
+    const endDateWrap = document.getElementById('end-date-wrap');
+    const addDaysWrap = document.getElementById('add-days-wrap');
+    const modeRangeBtn = document.getElementById('mode-range-btn');
+    const modeAddBtn = document.getElementById('mode-add-btn');
     const curlPreview = document.getElementById('curl-preview');
     const calcOutput = document.getElementById('calc-output');
     const respStatus = document.getElementById('resp-status');
     const respLatency = document.getElementById('resp-latency');
     const calcBtn = document.getElementById('calc-btn');
     const copyCurlBtn = document.getElementById('copy-curl-btn');
+    const copyJsonBtn = document.getElementById('copy-json-btn');
 
-    function updateCurlPreview() {
-      const payload = {
+    // KPI & Table elements
+    const kpiEffective = document.getElementById('kpi-effective');
+    const kpiHalf = document.getElementById('kpi-half');
+    const kpiHolidays = document.getElementById('kpi-holidays');
+    const kpiWeekends = document.getElementById('kpi-weekends');
+    const kpiCalendar = document.getElementById('kpi-calendar');
+    const kpiDeadline = document.getElementById('kpi-deadline');
+    const holidaysTableBody = document.getElementById('holidays-table-body');
+
+    let lastRenderedData = null;
+
+    function setLocale(loc) {
+      currentLocale = I18N[loc] ? loc : 'US';
+      const dict = I18N[currentLocale];
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.textContent = dict[key];
+      });
+      document.querySelectorAll('.locale-btn').forEach((b) => {
+        const active = b.dataset.locale === loc;
+        b.className = 'locale-btn border-l first:border-l-0 border-line px-2.5 py-1 transition ' +
+          (active ? 'bg-ink text-paper font-semibold' : 'text-muted hover:text-ink');
+      });
+      countryInput.value = loc;
+      updateCurlPreview();
+      if (lastRenderedData) renderResultView(lastRenderedData);
+    }
+
+    document.querySelectorAll('.locale-btn').forEach((btn) => {
+      btn.addEventListener('click', () => setLocale(btn.dataset.locale));
+    });
+
+    function setMode(mode) {
+      currentMode = mode;
+      if (mode === 'range') {
+        endDateWrap.classList.remove('hidden');
+        addDaysWrap.classList.add('hidden');
+        modeRangeBtn.className = 'py-2 px-3 font-medium bg-ink text-paper transition';
+        modeAddBtn.className = 'py-2 px-3 font-medium text-muted hover:text-ink transition';
+      } else {
+        endDateWrap.classList.add('hidden');
+        addDaysWrap.classList.remove('hidden');
+        modeAddBtn.className = 'py-2 px-3 font-medium bg-ink text-paper transition';
+        modeRangeBtn.className = 'py-2 px-3 font-medium text-muted hover:text-ink transition';
+      }
+      updateCurlPreview();
+    }
+
+    modeRangeBtn.addEventListener('click', () => setMode('range'));
+    modeAddBtn.addEventListener('click', () => setMode('add'));
+
+    function buildRequestPayload() {
+      if (currentMode === 'range') {
+        return {
+          start_date: startInput.value || '2026-10-26',
+          end_date: endInput.value || '2026-10-30',
+          country: countryInput.value || 'TR',
+        };
+      }
+      return {
         start_date: startInput.value || '2026-12-18',
         country: countryInput.value || 'DE',
         business_days: Number(daysInput.value) || 5,
       };
+    }
+
+    function updateCurlPreview() {
+      const payload = buildRequestPayload();
       curlPreview.textContent =
 `curl -X POST ${DISPLAY_BASE_URL}/api/v1/calculate \\
   -H "Content-Type: application/json" \\
@@ -373,7 +740,92 @@
     countryInput.addEventListener('change', updateCurlPreview);
     daysInput.addEventListener('input', updateCurlPreview);
     startInput.addEventListener('input', updateCurlPreview);
+    endInput.addEventListener('input', updateCurlPreview);
+
+    function renderResultView(data) {
+      lastRenderedData = data;
+      const dict = I18N[currentLocale];
+      const halfCount = data.half_days_count ?? (data.holidays ? data.holidays.filter(h => h.half_day).length : 0);
+      const effDays = data.effective_business_days ?? (data.business_days - 0.5 * halfCount);
+
+      kpiEffective.textContent = effDays;
+      kpiHalf.textContent = halfCount;
+      kpiHolidays.textContent = data.holidays_skipped ?? 0;
+      kpiWeekends.textContent = data.weekend_days_skipped ?? 0;
+      kpiCalendar.textContent = data.calendar_days ?? '—';
+      kpiDeadline.textContent = data.deadline ? `${data.deadline}${data.deadline_weekday ? ' (' + data.deadline_weekday + ')' : ''}` : '—';
+
+      holidaysTableBody.innerHTML = '';
+      const list = Array.isArray(data.holidays) ? data.holidays : [];
+      if (list.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="4" class="py-3 px-3 text-muted font-sans text-xs">${dict.empty_holidays}</td>`;
+        holidaysTableBody.appendChild(tr);
+      } else {
+        list.forEach((h) => {
+          const isHalf = Boolean(h.half_day);
+          const badge = isHalf
+            ? `<span class="inline-block border border-ink bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">${dict.badge_half}</span>`
+            : `<span class="inline-block bg-ink px-1.5 py-0.5 text-[10px] font-medium text-paper">${dict.badge_full}</span>`;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="py-2.5 px-3 font-medium text-ink tabular">${h.date}${h.weekday ? ' (' + h.weekday + ')' : ''}</td>
+            <td class="py-2.5 px-3">${badge}</td>
+            <td class="py-2.5 px-3 font-sans text-xs text-ink">${h.local_name || ''}</td>
+            <td class="py-2.5 px-3 font-sans text-xs text-muted">${h.name || ''}</td>
+          `;
+          holidaysTableBody.appendChild(tr);
+        });
+      }
+
+      calcOutput.textContent = JSON.stringify(data, null, 2);
+    }
+
+    // Initial sample state (TR 26-30 Oct 2026 showing 28 Oct Half-Day + 29 Oct Full Holiday)
+    renderResultView({
+      mode: "date_range",
+      start_date: "2026-10-26",
+      country: "TR",
+      business_days: 4,
+      effective_business_days: 3.5,
+      deadline: "2026-10-30",
+      deadline_weekday: "Fri",
+      calendar_days: 5,
+      weekend_days_skipped: 0,
+      holidays_skipped: 1,
+      half_days_count: 1,
+      holidays: [
+        {
+          date: "2026-10-28",
+          weekday: "Wed",
+          name: "Republic Day Eve (Half Day)",
+          local_name: "Cumhuriyet Bayramı Arifesi (Yarım Gün)",
+          half_day: true
+        },
+        {
+          date: "2026-10-29",
+          weekday: "Thu",
+          name: "Republic Day",
+          local_name: "Cumhuriyet Bayramı",
+          half_day: false
+        }
+      ]
+    });
+    countryInput.value = 'TR';
     updateCurlPreview();
+
+    // Quick preset buttons
+    document.querySelectorAll('.preset-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const [c, s, e] = btn.dataset.preset.split(',');
+        setMode('range');
+        countryInput.value = c;
+        startInput.value = s;
+        endInput.value = e;
+        updateCurlPreview();
+        calcForm.requestSubmit();
+      });
+    });
 
     copyCurlBtn.addEventListener('click', async () => {
       try {
@@ -383,32 +835,39 @@
       } catch (_) {}
     });
 
+    copyJsonBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(calcOutput.textContent);
+        copyJsonBtn.textContent = 'copied';
+        setTimeout(() => (copyJsonBtn.textContent = 'copy json'), 1500);
+      } catch (_) {}
+    });
+
     calcForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       calcBtn.disabled = true;
-      calcBtn.textContent = 'Executing...';
       const t0 = performance.now();
+      const payload = buildRequestPayload();
       try {
         const res = await fetch(`${API_BASE_URL}/api/v1/calculate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            start_date: startInput.value,
-            country: countryInput.value,
-            business_days: Number(daysInput.value),
-          }),
+          body: JSON.stringify(payload),
         });
         const elapsed = (performance.now() - t0).toFixed(1);
         const data = await res.json();
         respStatus.textContent = `${res.status} ${res.ok ? 'OK' : 'ERR'}`;
         respLatency.textContent = `${elapsed} ms`;
-        calcOutput.textContent = JSON.stringify(data, null, 2);
+        if (res.ok) {
+          renderResultView(data);
+        } else {
+          calcOutput.textContent = JSON.stringify(data, null, 2);
+        }
       } catch (err) {
         respStatus.textContent = 'NET ERR';
-        calcOutput.textContent = JSON.stringify({ error: 'Could not reach backend server. If on free tier, wait a few seconds for cold start and retry.' }, null, 2);
+        calcOutput.textContent = JSON.stringify({ error: 'Could not reach backend server. Wait a few seconds if server is waking up.' }, null, 2);
       } finally {
         calcBtn.disabled = false;
-        calcBtn.textContent = 'Execute Request →';
       }
     });
 
@@ -435,7 +894,7 @@
         return;
       }
       btn.disabled = true;
-      label.textContent = 'Submitting...';
+      label.textContent = '...';
       try {
         const res = await fetch(`${API_BASE_URL}/api/v1/waitlist`, {
           method: 'POST',
@@ -453,7 +912,7 @@
         showMessage('ERROR: Network failure. Server may be waking up, please retry in 10s.', false);
       } finally {
         btn.disabled = false;
-        label.textContent = 'Register for API Key';
+        label.textContent = I18N[currentLocale].waitlist_btn;
       }
     });
   </script>
