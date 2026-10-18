@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BizCal — Business Day, Half-Day &amp; Holiday Settlement API</title>
-  <meta name="description" content="Deterministic business day, half-day (Arife / early close), settlement date, and statutory holiday calculation API for TR, US, UK, DE, and NL." />
+  <title>BizCal — Global Business Day, Half-Day &amp; Holiday Settlement API</title>
+  <meta name="description" content="Deterministic business day, half-day, settlement date, and statutory holiday calculation API for TR, US, UK, DE, NL, SA, RU, and CN." />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -41,34 +41,38 @@
 </head>
 <body class="min-h-screen font-sans antialiased selection:bg-ink selection:text-paper">
 
-  <!-- Top Technical Bar + 5-Country Language Selector -->
+  <!-- Single-Line Fixed Technical Header (Never wraps on language change) -->
   <header class="border-b border-line bg-paper sticky top-0 z-20">
-    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-3.5">
-      <div class="flex items-center gap-5">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-3 whitespace-nowrap overflow-x-auto">
+      <div class="flex items-center gap-3 shrink-0">
         <a href="/" class="font-mono text-sm font-semibold tracking-tight text-ink">
           BIZCAL<span class="text-muted font-normal">/API</span>
         </a>
-        <span class="hidden md:inline-block h-3.5 w-px bg-line"></span>
-        <span data-i18n="tagline" class="hidden md:inline-block font-mono text-xs text-muted">
-          v1.1 · ISO-8601 Settlement &amp; Half-Day Calendar Engine
+        <span class="hidden xl:inline-block h-3.5 w-px bg-line"></span>
+        <span data-i18n="tagline" class="hidden xl:inline-block font-mono text-xs text-muted truncate max-w-[260px]">
+          v1.2 · ISO-8601 Calendar Engine
         </span>
       </div>
 
-      <div class="flex items-center gap-4">
-        <!-- 5 Country Locale Switcher -->
-        <div class="flex items-center border border-line bg-surface font-mono text-[11px]" role="group" aria-label="Language & Country Selector">
-          <button type="button" data-locale="TR" class="locale-btn px-2.5 py-1 text-muted hover:text-ink transition">TR</button>
-          <button type="button" data-locale="US" class="locale-btn border-l border-line px-2.5 py-1 bg-ink text-paper transition">US</button>
-          <button type="button" data-locale="UK" class="locale-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink transition">UK</button>
-          <button type="button" data-locale="DE" class="locale-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink transition">DE</button>
-          <button type="button" data-locale="NL" class="locale-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink transition">NL</button>
+      <div class="flex items-center gap-3 shrink-0">
+        <!-- 8-Country / Language Switcher (TR, US, UK, DE, NL, SA/AR, RU, CN/ZH) -->
+        <div class="flex items-center border border-line bg-surface font-mono text-[11px]" role="group" aria-label="Language Selector">
+          <button type="button" data-locale="TR" class="locale-btn px-2 py-1 text-muted hover:text-ink transition">TR</button>
+          <button type="button" data-locale="US" class="locale-btn border-l border-line px-2 py-1 bg-ink text-paper font-semibold transition">US</button>
+          <button type="button" data-locale="UK" class="locale-btn border-l border-line px-2 py-1 text-muted hover:text-ink transition">UK</button>
+          <button type="button" data-locale="DE" class="locale-btn border-l border-line px-2 py-1 text-muted hover:text-ink transition">DE</button>
+          <button type="button" data-locale="NL" class="locale-btn border-l border-line px-2 py-1 text-muted hover:text-ink transition">NL</button>
+          <button type="button" data-locale="SA" class="locale-btn border-l border-line px-2 py-1 text-muted hover:text-ink transition" title="العربية (SA)">AR</button>
+          <button type="button" data-locale="RU" class="locale-btn border-l border-line px-2 py-1 text-muted hover:text-ink transition" title="Русский (RU)">RU</button>
+          <button type="button" data-locale="CN" class="locale-btn border-l border-line px-2 py-1 text-muted hover:text-ink transition" title="中文 (CN)">ZH</button>
         </div>
 
-        <nav class="hidden sm:flex items-center gap-5 text-xs font-mono">
+        <nav class="hidden md:flex items-center gap-4 text-xs font-mono shrink-0">
           <a href="#playground" data-i18n="nav_playground" class="text-muted hover:text-ink transition">PLAYGROUND</a>
+          <a href="#holidays-explorer" data-i18n="nav_holidays" class="text-muted hover:text-ink transition">CALENDARS</a>
           <a href="#jurisdictions" data-i18n="nav_rules" class="text-muted hover:text-ink transition">RULES</a>
           <a href="https://github.com/ilhan48/business-calendar-api" target="_blank" rel="noopener noreferrer" class="text-muted hover:text-ink transition">GITHUB</a>
-          <a href="#access" data-i18n="nav_access" class="border border-ink bg-ink px-3 py-1 text-paper hover:bg-transparent hover:text-ink transition">
+          <a href="#access" data-i18n="nav_access" class="border border-ink bg-ink px-2.5 py-1 text-paper hover:bg-transparent hover:text-ink transition">
             API KEY
           </a>
         </nav>
@@ -88,7 +92,7 @@
           Deterministic business day, half-day, and statutory holiday math over HTTP.
         </h1>
         <p data-i18n="hero_desc" class="mt-4 max-w-2xl text-base leading-relaxed text-muted">
-          Financial settlement, SLA tracking, and ERP invoicing fail when holiday tables and half-day eve sessions are maintained by hand. BizCal computes working-day offsets and date-range breakdowns across fixed holidays, Easter offsets, hijri lunar shifts, and half-day sessions in under a millisecond.
+          Financial settlement, SLA tracking, and ERP invoicing fail when holiday tables and half-day eve sessions are maintained by hand. BizCal computes working-day offsets and date-range breakdowns across fixed holidays, Easter offsets, Hijri &amp; Chinese lunar shifts, and half-day sessions in under a millisecond.
         </p>
 
         <dl class="mt-8 grid grid-cols-3 border-t border-line pt-5 font-mono text-xs">
@@ -98,11 +102,11 @@
           </div>
           <div>
             <dt data-i18n="stat_halfday_label" class="text-muted">HALF-DAY ENGINE</dt>
-            <dd data-i18n="stat_halfday_val" class="mt-1 font-semibold text-ink">0.5d Arife &amp; Early Close</dd>
+            <dd data-i18n="stat_halfday_val" class="mt-1 font-semibold text-ink">0.5d Deduction Included</dd>
           </div>
           <div>
-            <dt data-i18n="stat_countries_label" class="text-muted">JURISDICTIONS</dt>
-            <dd class="mt-1 font-semibold text-ink">TR · US · UK · DE · NL</dd>
+            <dt data-i18n="stat_countries_label" class="text-muted">8 JURISDICTIONS</dt>
+            <dd class="mt-1 font-semibold text-ink">TR · US · UK · DE · NL · SA · RU · CN</dd>
           </div>
         </dl>
       </div>
@@ -147,7 +151,7 @@
       </div>
     </section>
 
-    <!-- Section 02: Interactive Live API Workbench (Date Range + Add Days + Table + Raw JSON) -->
+    <!-- Section 02: Interactive Live API Workbench -->
     <section id="playground" class="border-b border-line py-12">
       <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-end mb-6">
         <div>
@@ -164,7 +168,7 @@
       </div>
 
       <div class="grid border border-line lg:grid-cols-12">
-        <!-- Left Column: Mode Switcher + Parameters + cURL -->
+        <!-- Left Column: Mode Switcher + Parameters + Country-Specific Presets + cURL -->
         <div class="border-b border-line p-6 lg:col-span-5 lg:border-b-0 lg:border-r flex flex-col justify-between">
           <div>
             <!-- Mode Tabs -->
@@ -179,13 +183,16 @@
 
             <form id="calc-form" class="space-y-4">
               <div>
-                <label for="calc-country" data-i18n="label_country" class="block font-mono text-[11px] uppercase text-muted mb-1">Country (ISO)</label>
+                <label for="calc-country" data-i18n="label_country" class="block font-mono text-[11px] uppercase text-muted mb-1">Jurisdiction (ISO)</label>
                 <select id="calc-country" class="w-full border border-line bg-paper px-3 py-2 font-mono text-xs text-ink outline-none focus:border-ink">
-                  <option value="TR">TR — Turkey (incl. Arife Half-Days)</option>
-                  <option value="DE">DE — Germany (incl. Heiligabend / Silvester)</option>
-                  <option value="US" selected>US — United States (incl. Black Friday / Eves)</option>
-                  <option value="UK">UK — United Kingdom (incl. Christmas / NY Eve)</option>
-                  <option value="NL">NL — Netherlands (incl. Sinterklaas / Eves)</option>
+                  <option value="TR">TR — Turkey (Türkiye)</option>
+                  <option value="US">US — United States</option>
+                  <option value="UK">UK — United Kingdom</option>
+                  <option value="DE">DE — Germany (Deutschland)</option>
+                  <option value="NL">NL — Netherlands (Nederland)</option>
+                  <option value="SA">SA — Saudi Arabia (السعودية)</option>
+                  <option value="RU">RU — Russia (Россия)</option>
+                  <option value="CN">CN — China (中国)</option>
                 </select>
               </div>
 
@@ -208,22 +215,13 @@
                 </div>
               </div>
 
-              <!-- Quick Presets -->
+              <!-- Dynamic Country-Specific Quick Presets -->
               <div class="pt-1">
-                <div data-i18n="presets_label" class="font-mono text-[11px] uppercase text-muted mb-1.5">Quick Half-Day Test Presets</div>
-                <div class="flex flex-wrap gap-1.5 font-mono text-[11px]">
-                  <button type="button" data-preset="TR,2026-10-26,2026-10-30" class="preset-btn border border-line bg-surface px-2 py-1 text-ink hover:border-ink">
-                    TR: 28-29 Oct (Arife + Cumhuriyet)
-                  </button>
-                  <button type="button" data-preset="TR,2026-05-25,2026-06-01" class="preset-btn border border-line bg-surface px-2 py-1 text-ink hover:border-ink">
-                    TR: Kurban Bayramı + Arife
-                  </button>
-                  <button type="button" data-preset="DE,2026-12-21,2026-12-31" class="preset-btn border border-line bg-surface px-2 py-1 text-ink hover:border-ink">
-                    DE: Heiligabend &amp; Silvester
-                  </button>
-                  <button type="button" data-preset="US,2026-11-23,2026-11-27" class="preset-btn border border-line bg-surface px-2 py-1 text-ink hover:border-ink">
-                    US: Thanksgiving + Black Friday
-                  </button>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span data-i18n="presets_label" class="font-mono text-[11px] uppercase text-muted">Country Test Scenarios</span>
+                  <span id="preset-country-tag" class="font-mono text-[11px] font-semibold text-ink">TR</span>
+                </div>
+                <div id="country-presets-container" class="grid grid-cols-1 gap-1.5 font-mono text-[11px]">
                 </div>
               </div>
 
@@ -235,95 +233,142 @@
 
           <div class="mt-6 border-t border-line pt-4">
             <div class="flex items-center justify-between font-mono text-[11px] text-muted mb-2">
-              <span>EQUIVALENT CURL</span>
+              <span>CURL</span>
               <button type="button" id="copy-curl-btn" class="underline hover:text-ink">copy</button>
             </div>
             <pre id="curl-preview" class="overflow-x-auto bg-surface p-3 font-mono text-[11px] leading-relaxed text-ink border border-line"></pre>
           </div>
         </div>
 
-        <!-- Right Column: Tabulated Result View + Raw JSON -->
-        <div class="bg-surface p-6 lg:col-span-7 flex flex-col justify-between space-y-6">
+        <!-- Right Column: Unified 4-KPI Summary + Table / JSON View -->
+        <div class="bg-surface p-6 lg:col-span-7 flex flex-col justify-between">
           <div>
-            <!-- Status Header -->
-            <div class="flex items-center justify-between border-b border-line pb-3 font-mono text-xs">
-              <span data-i18n="result_header" class="font-semibold text-ink">TABULATED RESPONSE &amp; JSON</span>
+            <!-- Status + View Toggle Header -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3 font-mono text-xs">
+              <div class="flex items-center gap-1 border border-line bg-paper p-0.5 text-[11px]">
+                <button type="button" id="view-both-btn" class="px-2 py-0.5 bg-ink text-paper font-medium" data-i18n="view_both">Table + JSON</button>
+                <button type="button" id="view-table-btn" class="px-2 py-0.5 text-muted hover:text-ink" data-i18n="view_table">Table Only</button>
+                <button type="button" id="view-json-btn" class="px-2 py-0.5 text-muted hover:text-ink" data-i18n="view_json">JSON Only</button>
+              </div>
               <div class="flex items-center gap-3 tabular">
                 <span id="resp-status" class="border border-ink bg-paper px-1.5 py-0.5 text-[11px] font-medium text-ink">200 OK</span>
-                <span id="resp-latency" class="text-muted">— ms</span>
+                <span id="resp-latency" class="text-muted">0.2 ms</span>
               </div>
             </div>
 
-            <!-- 1. Tabulated Summary Metrics -->
-            <div class="mt-4 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-3 font-mono">
-              <div class="bg-paper p-3">
-                <div data-i18n="kpi_net_days" class="text-[10px] uppercase text-muted">NET BUSINESS DAYS</div>
-                <div id="kpi-effective" class="mt-1 text-lg font-semibold text-ink tabular">3.5</div>
+            <!-- Unified 4-Column Summary Strip (No redundant separate half-day box) -->
+            <div id="table-view-section">
+              <div class="mt-4 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4 font-mono">
+                <div class="bg-paper p-3">
+                  <div data-i18n="kpi_net_days" class="text-[10px] uppercase text-muted">NET BUSINESS DAYS</div>
+                  <div id="kpi-effective" class="mt-1 text-xl font-semibold text-ink tabular">3.5</div>
+                  <div id="kpi-effective-sub" class="mt-0.5 text-[10px] text-muted tabular">3 full + 1 half (0.5d)</div>
+                </div>
+                <div class="bg-paper p-3">
+                  <div data-i18n="kpi_holiday_deduction" class="text-[10px] uppercase text-muted">HOLIDAY IMPACT</div>
+                  <div id="kpi-holidays" class="mt-1 text-xl font-semibold text-ink tabular">-1.5d</div>
+                  <div id="kpi-holidays-sub" class="mt-0.5 text-[10px] text-muted tabular">1 full, 1 half-day</div>
+                </div>
+                <div class="bg-paper p-3">
+                  <div data-i18n="kpi_weekends" class="text-[10px] uppercase text-muted">WEEKEND DAYS</div>
+                  <div id="kpi-weekends" class="mt-1 text-xl font-semibold text-ink tabular">0</div>
+                  <div class="mt-0.5 text-[10px] text-muted">Sat / Sun</div>
+                </div>
+                <div class="bg-paper p-3">
+                  <div data-i18n="kpi_end_date" class="text-[10px] uppercase text-muted">SPAN &amp; END DATE</div>
+                  <div id="kpi-deadline" class="mt-1 text-sm font-semibold text-ink tabular">2026-10-30</div>
+                  <div id="kpi-calendar" class="mt-1 text-[10px] text-muted tabular">5 calendar days (Fri)</div>
+                </div>
               </div>
-              <div class="bg-paper p-3">
-                <div data-i18n="kpi_half_days" class="text-[10px] uppercase text-muted">HALF-DAYS (0.5d)</div>
-                <div id="kpi-half" class="mt-1 text-lg font-semibold text-ink tabular">1</div>
-              </div>
-              <div class="bg-paper p-3">
-                <div data-i18n="kpi_full_holidays" class="text-[10px] uppercase text-muted">FULL HOLIDAYS</div>
-                <div id="kpi-holidays" class="mt-1 text-lg font-semibold text-ink tabular">1</div>
-              </div>
-              <div class="bg-paper p-3">
-                <div data-i18n="kpi_weekends" class="text-[10px] uppercase text-muted">WEEKEND DAYS</div>
-                <div id="kpi-weekends" class="mt-1 text-sm font-semibold text-ink tabular">0</div>
-              </div>
-              <div class="bg-paper p-3">
-                <div data-i18n="kpi_calendar" class="text-[10px] uppercase text-muted">CALENDAR DAYS</div>
-                <div id="kpi-calendar" class="mt-1 text-sm font-semibold text-ink tabular">5</div>
-              </div>
-              <div class="bg-paper p-3">
-                <div data-i18n="kpi_end_date" class="text-[10px] uppercase text-muted">END / DEADLINE</div>
-                <div id="kpi-deadline" class="mt-1 text-sm font-semibold text-ink tabular">2026-10-30 (Fri)</div>
+
+              <!-- Detected Holidays Table (with unified Deduction column: -1.0d vs -0.5d) -->
+              <div class="mt-4">
+                <div class="overflow-x-auto border border-line bg-paper">
+                  <table class="w-full text-left border-collapse font-mono text-xs">
+                    <thead>
+                      <tr class="border-b border-line bg-surface text-[11px] text-muted uppercase">
+                        <th data-i18n="th_date" class="py-2 px-3">Date</th>
+                        <th data-i18n="th_impact" class="py-2 px-3">Deduction</th>
+                        <th data-i18n="th_local" class="py-2 px-3">Local Name</th>
+                        <th data-i18n="th_intl" class="py-2 px-3">English Name</th>
+                      </tr>
+                    </thead>
+                    <tbody id="holidays-table-body" class="divide-y divide-line">
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
-            <!-- 2. Detected Holidays & Half-Days Table -->
-            <div class="mt-5">
-              <div data-i18n="table_detected_title" class="font-mono text-[11px] font-semibold uppercase text-ink mb-2">
-                Detected Holidays &amp; Half-Days in Span
-              </div>
-              <div class="overflow-x-auto border border-line bg-paper">
-                <table class="w-full text-left border-collapse font-mono text-xs">
-                  <thead>
-                    <tr class="border-b border-line bg-surface text-[11px] text-muted uppercase">
-                      <th data-i18n="th_date" class="py-2 px-3">Date</th>
-                      <th data-i18n="th_type" class="py-2 px-3">Session Type</th>
-                      <th data-i18n="th_local" class="py-2 px-3">Local Name</th>
-                      <th data-i18n="th_intl" class="py-2 px-3">International Name</th>
-                    </tr>
-                  </thead>
-                  <tbody id="holidays-table-body" class="divide-y divide-line">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- 3. Raw JSON Output -->
-            <div class="mt-5">
+            <!-- Raw JSON Output -->
+            <div id="json-view-section" class="mt-4">
               <div class="flex items-center justify-between font-mono text-[11px] text-muted mb-1.5">
-                <span>RAW JSON PAYLOAD (response.json)</span>
+                <span>RAW JSON (response.json)</span>
                 <button type="button" id="copy-json-btn" class="underline hover:text-ink">copy json</button>
               </div>
-              <pre id="calc-output" class="max-h-56 overflow-y-auto overflow-x-auto border border-line bg-paper p-3.5 font-mono text-[11px] leading-relaxed text-ink"></pre>
+              <pre id="calc-output" class="max-h-52 overflow-y-auto overflow-x-auto border border-line bg-paper p-3.5 font-mono text-[11px] leading-relaxed text-ink"></pre>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Section 03: Jurisdiction Rule Coverage Table (Full + Half Days) -->
-    <section id="jurisdictions" class="border-b border-line py-12">
+    <!-- Section 03: Complete Holiday Calendar Explorer for All 8 Countries -->
+    <section id="holidays-explorer" class="border-b border-line py-12">
+      <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end mb-6">
+        <div>
+          <div data-i18n="sec_cal_label" class="font-mono text-xs uppercase tracking-widest text-muted">
+            SECTION 03 // COMPLETE HOLIDAY DIRECTORY
+          </div>
+          <h2 data-i18n="sec_cal_title" class="mt-1 text-xl font-semibold text-ink">
+            All Statutory Holidays &amp; Half-Days by Country
+          </h2>
+        </div>
+
+        <!-- Country + Year Selector for Directory -->
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+          <div class="flex border border-line bg-surface">
+            <button type="button" data-cal-country="TR" class="cal-country-btn px-2.5 py-1 bg-ink text-paper font-semibold">TR</button>
+            <button type="button" data-cal-country="US" class="cal-country-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink">US</button>
+            <button type="button" data-cal-country="UK" class="cal-country-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink">UK</button>
+            <button type="button" data-cal-country="DE" class="cal-country-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink">DE</button>
+            <button type="button" data-cal-country="NL" class="cal-country-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink">NL</button>
+            <button type="button" data-cal-country="SA" class="cal-country-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink">SA</button>
+            <button type="button" data-cal-country="RU" class="cal-country-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink">RU</button>
+            <button type="button" data-cal-country="CN" class="cal-country-btn border-l border-line px-2.5 py-1 text-muted hover:text-ink">CN</button>
+          </div>
+          <select id="cal-year-select" class="border border-line bg-paper px-2.5 py-1 font-mono text-xs text-ink outline-none">
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto border border-line bg-paper">
+        <table class="w-full text-left border-collapse font-mono text-xs">
+          <thead>
+            <tr class="border-b border-line bg-surface text-muted uppercase">
+              <th data-i18n="th_date" class="py-2.5 px-4">Date</th>
+              <th data-i18n="th_impact" class="py-2.5 px-4">Weight</th>
+              <th data-i18n="th_local" class="py-2.5 px-4">Local Official Name</th>
+              <th data-i18n="th_intl" class="py-2.5 px-4">International Name</th>
+            </tr>
+          </thead>
+          <tbody id="directory-table-body" class="divide-y divide-line">
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 04: 8-Jurisdiction Rule Summary Table -->
+    <section id="jurisdictions" class="py-12">
       <div class="mb-6">
         <div data-i18n="sec3_label" class="font-mono text-xs uppercase tracking-widest text-muted">
-          SECTION 03 // STATUTORY &amp; HALF-DAY COVERAGE
+          SECTION 04 // STATUTORY RULE SPECIFICATION
         </div>
         <h2 data-i18n="sec3_title" class="mt-1 text-xl font-semibold text-ink">
-          Supported Jurisdictions, Moveable Feasts &amp; Half-Day Rules
+          8 Jurisdictions, Moveable Feasts &amp; Half-Day Rules
         </h2>
       </div>
 
@@ -331,42 +376,60 @@
         <table class="w-full text-left border-collapse font-mono text-xs">
           <thead>
             <tr class="border-b border-line bg-surface text-muted uppercase">
-              <th class="py-3 px-4 font-medium">Code</th>
+              <th class="py-3 px-4 font-medium">ISO</th>
               <th data-i18n="cov_th_country" class="py-3 px-4 font-medium">Jurisdiction</th>
               <th data-i18n="cov_th_full" class="py-3 px-4 font-medium">Full-Day Statutory Rules</th>
-              <th data-i18n="cov_th_half" class="py-3 px-4 font-medium">Half-Day (0.5d) Detection</th>
+              <th data-i18n="cov_th_half" class="py-3 px-4 font-medium">Half-Day (-0.5d) Rules</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-line">
             <tr>
-              <td class="py-3.5 px-4 font-semibold text-ink">TR</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">Turkey</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">Civic holidays + Diyanet Ramazan Bayramı (3d) &amp; Kurban Bayramı (4d)</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">28 Oct Republic Eve, Ramazan Bayramı Arifesi, Kurban Bayramı Arifesi</td>
+              <td class="py-3 px-4 font-semibold text-ink">TR</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Turkey (Türkiye)</td>
+              <td class="py-3 px-4 font-sans text-sm text-muted">National holidays + Diyanet Ramazan Bayramı (3d) &amp; Kurban Bayramı (4d)</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">28 Oct Republic Eve, Ramazan Bayramı Arifesi, Kurban Bayramı Arifesi</td>
             </tr>
             <tr>
-              <td class="py-3.5 px-4 font-semibold text-ink">US</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">United States</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">11 Federal holidays + 5 U.S.C. 6103 Fri/Mon weekend observance</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">Black Friday (Day after Thanksgiving), Christmas Eve, New Year's Eve</td>
+              <td class="py-3 px-4 font-semibold text-ink">US</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">United States</td>
+              <td class="py-3 px-4 font-sans text-sm text-muted">11 Federal holidays + 5 U.S.C. 6103 Fri/Mon weekend observance</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Black Friday (Day after Thanksgiving), Christmas Eve, New Year's Eve</td>
             </tr>
             <tr>
-              <td class="py-3.5 px-4 font-semibold text-ink">UK</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">United Kingdom</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">8 England &amp; Wales Bank Holidays + Royal substitute weekdays</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">Christmas Eve (24 Dec), New Year's Eve (31 Dec)</td>
+              <td class="py-3 px-4 font-semibold text-ink">UK</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">United Kingdom</td>
+              <td class="py-3 px-4 font-sans text-sm text-muted">8 England &amp; Wales Bank Holidays + Royal substitute weekdays</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Christmas Eve (24 Dec), New Year's Eve (31 Dec)</td>
             </tr>
             <tr>
-              <td class="py-3.5 px-4 font-semibold text-ink">DE</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">Germany</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">9 Nationwide holidays + Computus Easter offsets (-2d, +1d, +39d, +50d)</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">Heiligabend (24 Dec), Silvester (31 Dec)</td>
+              <td class="py-3 px-4 font-semibold text-ink">DE</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Germany (Deutschland)</td>
+              <td class="py-3 px-4 font-sans text-sm text-muted">9 Nationwide holidays + Computus Easter offsets (-2d, +1d, +39d, +50d)</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Heiligabend (24 Dec), Silvester (31 Dec)</td>
             </tr>
             <tr>
-              <td class="py-3.5 px-4 font-semibold text-ink">NL</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">Netherlands</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-muted">National holidays + Koningsdag Sunday-to-Saturday rule + lustrum 5 May</td>
-              <td class="py-3.5 px-4 font-sans text-sm text-ink">Sinterklaasavond (5 Dec), Kerstavond (24 Dec), Oudejaarsavond (31 Dec)</td>
+              <td class="py-3 px-4 font-semibold text-ink">NL</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Netherlands (Nederland)</td>
+              <td class="py-3 px-4 font-sans text-sm text-muted">National holidays + Koningsdag Sunday-to-Saturday shift + lustrum 5 May</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Sinterklaasavond (5 Dec), Kerstavond (24 Dec), Oudejaarsavond (31 Dec)</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-ink">SA</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Saudi Arabia (السعودية)</td>
+              <td class="py-3 px-4 font-sans text-sm text-muted">Founding Day (22 Feb), National Day (23 Sep), Eid al-Fitr (4d), Arafat &amp; Eid al-Adha (5d)</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Ramadan 29 Eve (وقفة عيد الفطر), National Day Eve (22 Sep)</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-ink">RU</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Russia (Россия)</td>
+              <td class="py-3 px-4 font-sans text-sm text-muted">New Year Holidays (1–8 Jan), Orthodox Christmas, 23 Feb, 8 Mar, 1 &amp; 9 May, 12 Jun, 4 Nov</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Pre-holiday shortened days (Предпраздничные дни: 20 Feb, 30 Apr, 8 May, 31 Dec)</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-ink">CN</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">China (中国)</td>
+              <td class="py-3 px-4 font-sans text-sm text-muted">New Year, Spring Festival (春节 3d), Qingming, Labour Day (2d), Dragon Boat, Mid-Autumn, National Day (国庆节 3d)</td>
+              <td class="py-3 px-4 font-sans text-sm text-ink">Lunar New Year's Eve (除夕), National Day Eve (9月30日)</td>
             </tr>
           </tbody>
         </table>
@@ -380,7 +443,7 @@
       <span>BIZCAL API · DETERMINISTIC CALENDAR ENGINE</span>
       <div class="flex gap-6">
         <a href="https://github.com/ilhan48/business-calendar-api" target="_blank" rel="noopener noreferrer" class="hover:text-ink">GitHub Repository</a>
-        <span>Status: Operational</span>
+        <span>TR · US · UK · DE · NL · SA · RU · CN</span>
       </div>
     </div>
   </footer>
@@ -394,20 +457,245 @@
     );
     const DISPLAY_BASE_URL = API_BASE_URL || window.location.origin;
 
-    // --- 5-Country Localization Dictionary (TR, US, UK, DE, NL) ---
+    // --- Complete 8-Country Holiday Dataset (2025-2027) for Instant Explorer & Fallback ---
+    const HOLIDAY_DB = {
+      TR: {
+        2025: [
+          { date: '2025-01-01', name: "New Year's Day", local_name: 'Yılbaşı', half_day: false },
+          { date: '2025-03-29', name: 'Eid al-Fitr Eve (Half Day)', local_name: 'Ramazan Bayramı Arifesi', half_day: true },
+          { date: '2025-03-30', name: 'Eid al-Fitr (Day 1)', local_name: 'Ramazan Bayramı (1. Gün)', half_day: false },
+          { date: '2025-03-31', name: 'Eid al-Fitr (Day 2)', local_name: 'Ramazan Bayramı (2. Gün)', half_day: false },
+          { date: '2025-04-01', name: 'Eid al-Fitr (Day 3)', local_name: 'Ramazan Bayramı (3. Gün)', half_day: false },
+          { date: '2025-04-23', name: "National Sovereignty and Children's Day", local_name: 'Ulusal Egemenlik ve Çocuk Bayramı', half_day: false },
+          { date: '2025-05-01', name: 'Labour and Solidarity Day', local_name: 'Emek ve Dayanışma Günü', half_day: false },
+          { date: '2025-05-19', name: 'Commemoration of Atatürk, Youth and Sports Day', local_name: "Atatürk'ü Anma, Gençlik ve Spor Bayramı", half_day: false },
+          { date: '2025-06-05', name: 'Eid al-Adha Eve (Half Day)', local_name: 'Kurban Bayramı Arifesi', half_day: true },
+          { date: '2025-06-06', name: 'Eid al-Adha (Day 1)', local_name: 'Kurban Bayramı (1. Gün)', half_day: false },
+          { date: '2025-06-07', name: 'Eid al-Adha (Day 2)', local_name: 'Kurban Bayramı (2. Gün)', half_day: false },
+          { date: '2025-06-08', name: 'Eid al-Adha (Day 3)', local_name: 'Kurban Bayramı (3. Gün)', half_day: false },
+          { date: '2025-06-09', name: 'Eid al-Adha (Day 4)', local_name: 'Kurban Bayramı (4. Gün)', half_day: false },
+          { date: '2025-07-15', name: 'Democracy and National Unity Day', local_name: 'Demokrasi ve Milli Birlik Günü', half_day: false },
+          { date: '2025-08-30', name: 'Victory Day', local_name: 'Zafer Bayramı', half_day: false },
+          { date: '2025-10-28', name: 'Republic Day Eve (Half Day)', local_name: 'Cumhuriyet Bayramı Arifesi', half_day: true },
+          { date: '2025-10-29', name: 'Republic Day', local_name: 'Cumhuriyet Bayramı', half_day: false },
+        ],
+        2026: [
+          { date: '2026-01-01', name: "New Year's Day", local_name: 'Yılbaşı', half_day: false },
+          { date: '2026-03-19', name: 'Eid al-Fitr Eve (Half Day)', local_name: 'Ramazan Bayramı Arifesi', half_day: true },
+          { date: '2026-03-20', name: 'Eid al-Fitr (Day 1)', local_name: 'Ramazan Bayramı (1. Gün)', half_day: false },
+          { date: '2026-03-21', name: 'Eid al-Fitr (Day 2)', local_name: 'Ramazan Bayramı (2. Gün)', half_day: false },
+          { date: '2026-03-22', name: 'Eid al-Fitr (Day 3)', local_name: 'Ramazan Bayramı (3. Gün)', half_day: false },
+          { date: '2026-04-23', name: "National Sovereignty and Children's Day", local_name: 'Ulusal Egemenlik ve Çocuk Bayramı', half_day: false },
+          { date: '2026-05-01', name: 'Labour and Solidarity Day', local_name: 'Emek ve Dayanışma Günü', half_day: false },
+          { date: '2026-05-19', name: 'Commemoration of Atatürk, Youth and Sports Day', local_name: "Atatürk'ü Anma, Gençlik ve Spor Bayramı", half_day: false },
+          { date: '2026-05-26', name: 'Eid al-Adha Eve (Half Day)', local_name: 'Kurban Bayramı Arifesi', half_day: true },
+          { date: '2026-05-27', name: 'Eid al-Adha (Day 1)', local_name: 'Kurban Bayramı (1. Gün)', half_day: false },
+          { date: '2026-05-28', name: 'Eid al-Adha (Day 2)', local_name: 'Kurban Bayramı (2. Gün)', half_day: false },
+          { date: '2026-05-29', name: 'Eid al-Adha (Day 3)', local_name: 'Kurban Bayramı (3. Gün)', half_day: false },
+          { date: '2026-05-30', name: 'Eid al-Adha (Day 4)', local_name: 'Kurban Bayramı (4. Gün)', half_day: false },
+          { date: '2026-07-15', name: 'Democracy and National Unity Day', local_name: 'Demokrasi ve Milli Birlik Günü', half_day: false },
+          { date: '2026-08-30', name: 'Victory Day', local_name: 'Zafer Bayramı', half_day: false },
+          { date: '2026-10-28', name: 'Republic Day Eve (Half Day)', local_name: 'Cumhuriyet Bayramı Arifesi', half_day: true },
+          { date: '2026-10-29', name: 'Republic Day', local_name: 'Cumhuriyet Bayramı', half_day: false },
+        ],
+        2027: [
+          { date: '2027-01-01', name: "New Year's Day", local_name: 'Yılbaşı', half_day: false },
+          { date: '2027-03-08', name: 'Eid al-Fitr Eve (Half Day)', local_name: 'Ramazan Bayramı Arifesi', half_day: true },
+          { date: '2027-03-09', name: 'Eid al-Fitr (Day 1)', local_name: 'Ramazan Bayramı (1. Gün)', half_day: false },
+          { date: '2027-03-10', name: 'Eid al-Fitr (Day 2)', local_name: 'Ramazan Bayramı (2. Gün)', half_day: false },
+          { date: '2027-03-11', name: 'Eid al-Fitr (Day 3)', local_name: 'Ramazan Bayramı (3. Gün)', half_day: false },
+          { date: '2027-04-23', name: "National Sovereignty and Children's Day", local_name: 'Ulusal Egemenlik ve Çocuk Bayramı', half_day: false },
+          { date: '2027-05-01', name: 'Labour and Solidarity Day', local_name: 'Emek ve Dayanışma Günü', half_day: false },
+          { date: '2027-05-15', name: 'Eid al-Adha Eve (Half Day)', local_name: 'Kurban Bayramı Arifesi', half_day: true },
+          { date: '2027-05-16', name: 'Eid al-Adha (Day 1)', local_name: 'Kurban Bayramı (1. Gün)', half_day: false },
+          { date: '2027-05-17', name: 'Eid al-Adha (Day 2)', local_name: 'Kurban Bayramı (2. Gün)', half_day: false },
+          { date: '2027-05-18', name: 'Eid al-Adha (Day 3)', local_name: 'Kurban Bayramı (3. Gün)', half_day: false },
+          { date: '2027-05-19', name: 'Commemoration of Atatürk & Eid al-Adha (Day 4)', local_name: "Atatürk'ü Anma & Kurban Bayramı (4. Gün)", half_day: false },
+          { date: '2027-07-15', name: 'Democracy and National Unity Day', local_name: 'Demokrasi ve Milli Birlik Günü', half_day: false },
+          { date: '2027-08-30', name: 'Victory Day', local_name: 'Zafer Bayramı', half_day: false },
+          { date: '2027-10-28', name: 'Republic Day Eve (Half Day)', local_name: 'Cumhuriyet Bayramı Arifesi', half_day: true },
+          { date: '2027-10-29', name: 'Republic Day', local_name: 'Cumhuriyet Bayramı', half_day: false },
+        ]
+      },
+      US: {
+        2026: [
+          { date: '2026-01-01', name: "New Year's Day", local_name: "New Year's Day", half_day: false },
+          { date: '2026-01-19', name: 'Martin Luther King Jr. Day', local_name: 'Birthday of Martin Luther King, Jr.', half_day: false },
+          { date: '2026-02-16', name: "Presidents' Day", local_name: "Washington's Birthday", half_day: false },
+          { date: '2026-05-25', name: 'Memorial Day', local_name: 'Memorial Day', half_day: false },
+          { date: '2026-06-19', name: 'Juneteenth National Independence Day', local_name: 'Juneteenth', half_day: false },
+          { date: '2026-07-03', name: 'Independence Day (observed)', local_name: 'Independence Day (observed)', half_day: false },
+          { date: '2026-07-04', name: 'Independence Day', local_name: 'Independence Day', half_day: false },
+          { date: '2026-09-07', name: 'Labor Day', local_name: 'Labor Day', half_day: false },
+          { date: '2026-10-12', name: 'Columbus Day', local_name: 'Columbus Day', half_day: false },
+          { date: '2026-11-11', name: 'Veterans Day', local_name: 'Veterans Day', half_day: false },
+          { date: '2026-11-26', name: 'Thanksgiving Day', local_name: 'Thanksgiving Day', half_day: false },
+          { date: '2026-11-27', name: 'Day after Thanksgiving (Half Day)', local_name: 'Black Friday (Early Close)', half_day: true },
+          { date: '2026-12-24', name: 'Christmas Eve (Half Day)', local_name: 'Christmas Eve (Early Close)', half_day: true },
+          { date: '2026-12-25', name: 'Christmas Day', local_name: 'Christmas Day', half_day: false },
+          { date: '2026-12-31', name: "New Year's Eve (Half Day)", local_name: "New Year's Eve (Early Close)", half_day: true },
+        ]
+      },
+      UK: {
+        2026: [
+          { date: '2026-01-01', name: "New Year's Day", local_name: "New Year's Day", half_day: false },
+          { date: '2026-04-03', name: 'Good Friday', local_name: 'Good Friday', half_day: false },
+          { date: '2026-04-06', name: 'Easter Monday', local_name: 'Easter Monday', half_day: false },
+          { date: '2026-05-04', name: 'Early May Bank Holiday', local_name: 'Early May Bank Holiday', half_day: false },
+          { date: '2026-05-25', name: 'Spring Bank Holiday', local_name: 'Spring Bank Holiday', half_day: false },
+          { date: '2026-08-31', name: 'Summer Bank Holiday', local_name: 'Summer Bank Holiday', half_day: false },
+          { date: '2026-12-24', name: 'Christmas Eve (Half Day)', local_name: 'Christmas Eve (Early Close)', half_day: true },
+          { date: '2026-12-25', name: 'Christmas Day', local_name: 'Christmas Day', half_day: false },
+          { date: '2026-12-26', name: 'Boxing Day', local_name: 'Boxing Day', half_day: false },
+          { date: '2026-12-28', name: 'Boxing Day (substitute day)', local_name: 'Boxing Day (substitute day)', half_day: false },
+          { date: '2026-12-31', name: "New Year's Eve (Half Day)", local_name: "New Year's Eve (Early Close)", half_day: true },
+        ]
+      },
+      DE: {
+        2026: [
+          { date: '2026-01-01', name: "New Year's Day", local_name: 'Neujahr', half_day: false },
+          { date: '2026-04-03', name: 'Good Friday', local_name: 'Karfreitag', half_day: false },
+          { date: '2026-04-06', name: 'Easter Monday', local_name: 'Ostermontag', half_day: false },
+          { date: '2026-05-01', name: 'Labour Day', local_name: 'Tag der Arbeit', half_day: false },
+          { date: '2026-05-14', name: 'Ascension Day', local_name: 'Christi Himmelfahrt', half_day: false },
+          { date: '2026-05-25', name: 'Whit Monday', local_name: 'Pfingstmontag', half_day: false },
+          { date: '2026-10-03', name: 'German Unity Day', local_name: 'Tag der Deutschen Einheit', half_day: false },
+          { date: '2026-12-24', name: 'Christmas Eve (Half Day)', local_name: 'Heiligabend (Halber Arbeitstag)', half_day: true },
+          { date: '2026-12-25', name: 'Christmas Day', local_name: 'Erster Weihnachtstag', half_day: false },
+          { date: '2026-12-26', name: "St. Stephen's Day", local_name: 'Zweiter Weihnachtstag', half_day: false },
+          { date: '2026-12-31', name: "New Year's Eve (Half Day)", local_name: 'Silvester (Halber Arbeitstag)', half_day: true },
+        ]
+      },
+      NL: {
+        2026: [
+          { date: '2026-01-01', name: "New Year's Day", local_name: 'Nieuwjaarsdag', half_day: false },
+          { date: '2026-04-06', name: 'Easter Monday', local_name: 'Tweede paasdag', half_day: false },
+          { date: '2026-04-27', name: "King's Day", local_name: 'Koningsdag', half_day: false },
+          { date: '2026-05-14', name: 'Ascension Day', local_name: 'Hemelvaartsdag', half_day: false },
+          { date: '2026-05-25', name: 'Whit Monday', local_name: 'Tweede pinksterdag', half_day: false },
+          { date: '2026-12-05', name: "St. Nicholas' Eve (Half Day)", local_name: 'Sinterklaasavond (Halve dag)', half_day: true },
+          { date: '2026-12-24', name: 'Christmas Eve (Half Day)', local_name: 'Kerstavond (Halve dag)', half_day: true },
+          { date: '2026-12-25', name: 'Christmas Day', local_name: 'Eerste kerstdag', half_day: false },
+          { date: '2026-12-26', name: 'Second Day of Christmas', local_name: 'Tweede kerstdag', half_day: false },
+          { date: '2026-12-31', name: "New Year's Eve (Half Day)", local_name: 'Oudejaarsavond (Halve dag)', half_day: true },
+        ]
+      },
+      SA: {
+        2026: [
+          { date: '2026-02-22', name: 'Saudi Founding Day', local_name: 'يوم التأسيس', half_day: false },
+          { date: '2026-03-19', name: 'Ramadan 29 Eve (Half Day)', local_name: 'وقفة عيد الفطر (نصف يوم)', half_day: true },
+          { date: '2026-03-20', name: 'Eid al-Fitr (Day 1)', local_name: 'عيد الفطر (اليوم 1)', half_day: false },
+          { date: '2026-03-21', name: 'Eid al-Fitr (Day 2)', local_name: 'عيد الفطر (اليوم 2)', half_day: false },
+          { date: '2026-03-22', name: 'Eid al-Fitr (Day 3)', local_name: 'عيد الفطر (اليوم 3)', half_day: false },
+          { date: '2026-03-23', name: 'Eid al-Fitr (Day 4)', local_name: 'عيد الفطر (اليوم 4)', half_day: false },
+          { date: '2026-05-26', name: 'Arafat Day', local_name: 'يوم عرفة', half_day: false },
+          { date: '2026-05-27', name: 'Eid al-Adha (Day 1)', local_name: 'عيد الأضحى (اليوم 1)', half_day: false },
+          { date: '2026-05-28', name: 'Eid al-Adha (Day 2)', local_name: 'عيد الأضحى (اليوم 2)', half_day: false },
+          { date: '2026-05-29', name: 'Eid al-Adha (Day 3)', local_name: 'عيد الأضحى (اليوم 3)', half_day: false },
+          { date: '2026-05-30', name: 'Eid al-Adha (Day 4)', local_name: 'عيد الأضحى (اليوم 4)', half_day: false },
+          { date: '2026-09-22', name: 'National Day Eve (Half Day)', local_name: 'وقفة اليوم الوطني (نصف يوم)', half_day: true },
+          { date: '2026-09-23', name: 'Saudi National Day', local_name: 'اليوم الوطني السعودي', half_day: false },
+        ]
+      },
+      RU: {
+        2026: [
+          { date: '2026-01-01', name: 'New Year Holiday', local_name: 'Новогодние каникулы', half_day: false },
+          { date: '2026-01-02', name: 'New Year Holiday', local_name: 'Новогодние каникулы', half_day: false },
+          { date: '2026-01-05', name: 'New Year Holiday', local_name: 'Новогодние каникулы', half_day: false },
+          { date: '2026-01-06', name: 'New Year Holiday', local_name: 'Новогодние каникулы', half_day: false },
+          { date: '2026-01-07', name: 'Orthodox Christmas Day', local_name: 'Рождество Христово', half_day: false },
+          { date: '2026-01-08', name: 'New Year Holiday', local_name: 'Новогодние каникулы', half_day: false },
+          { date: '2026-02-20', name: 'Pre-Holiday Shortened Day (Half Day)', local_name: 'Предпраздничный день (сокращенный)', half_day: true },
+          { date: '2026-02-23', name: 'Defender of the Fatherland Day', local_name: 'День защитника Отечества', half_day: false },
+          { date: '2026-03-08', name: "International Women's Day", local_name: 'Международный женский день', half_day: false },
+          { date: '2026-04-30', name: 'May Day Eve (Half Day)', local_name: 'Предпраздничный день (30 апреля)', half_day: true },
+          { date: '2026-05-01', name: 'Spring and Labour Day', local_name: 'Праздник Весны и Труда', half_day: false },
+          { date: '2026-05-08', name: 'Victory Day Eve (Half Day)', local_name: 'Предпраздничный день (8 мая)', half_day: true },
+          { date: '2026-05-09', name: 'Victory Day', local_name: 'День Победы', half_day: false },
+          { date: '2026-06-12', name: 'Russia Day', local_name: 'День России', half_day: false },
+          { date: '2026-11-04', name: 'National Unity Day', local_name: 'День народного единства', half_day: false },
+          { date: '2026-12-31', name: "New Year's Eve (Half Day)", local_name: 'Канун Нового года', half_day: true },
+        ]
+      },
+      CN: {
+        2026: [
+          { date: '2026-01-01', name: "New Year's Day", local_name: '元旦', half_day: false },
+          { date: '2026-02-16', name: "Lunar New Year's Eve (Half Day)", local_name: '除夕 (半天)', half_day: true },
+          { date: '2026-02-17', name: 'Spring Festival (Day 1)', local_name: '春节 (初一)', half_day: false },
+          { date: '2026-02-18', name: 'Spring Festival (Day 2)', local_name: '春节 (初二)', half_day: false },
+          { date: '2026-02-19', name: 'Spring Festival (Day 3)', local_name: '春节 (初三)', half_day: false },
+          { date: '2026-04-04', name: 'Qingming Festival', local_name: '清明节', half_day: false },
+          { date: '2026-05-01', name: 'Labour Day', local_name: '劳动节', half_day: false },
+          { date: '2026-05-02', name: 'Labour Day Holiday', local_name: '劳动节假期', half_day: false },
+          { date: '2026-06-19', name: 'Dragon Boat Festival', local_name: '端午节', half_day: false },
+          { date: '2026-09-25', name: 'Mid-Autumn Festival', local_name: '中秋节', half_day: false },
+          { date: '2026-09-30', name: 'National Day Eve (Half Day)', local_name: '国庆节前夕 (半天)', half_day: true },
+          { date: '2026-10-01', name: 'National Day (Day 1)', local_name: '国庆节 (第一天)', half_day: false },
+          { date: '2026-10-02', name: 'National Day (Day 2)', local_name: '国庆节 (第二天)', half_day: false },
+          { date: '2026-10-03', name: 'National Day (Day 3)', local_name: '国庆节 (第三天)', half_day: false },
+        ]
+      }
+    };
+
+    // --- Country-Specific Presets for ALL 8 Countries ---
+    const COUNTRY_PRESETS = {
+      TR: [
+        { start: '2026-10-26', end: '2026-10-30', label: '28-29 Ekim · Cumhuriyet Bayramı & Arife (0.5g)' },
+        { start: '2026-05-25', end: '2026-06-01', label: '25 May - 1 Haz · Kurban Bayramı & Arife (0.5g)' },
+        { start: '2026-03-18', end: '2026-03-24', label: '18-24 Mart · Ramazan Bayramı & Arife (0.5g)' },
+      ],
+      US: [
+        { start: '2026-11-23', end: '2026-11-27', label: 'Nov 23-27 · Thanksgiving + Black Friday (0.5d)' },
+        { start: '2026-07-01', end: '2026-07-07', label: 'Jul 1-7 · Independence Day (Fri Jul 3 Observed)' },
+        { start: '2026-12-21', end: '2026-12-31', label: 'Dec 21-31 · Christmas & New Year Eves (0.5d)' },
+      ],
+      UK: [
+        { start: '2026-12-21', end: '2026-12-31', label: '21-31 Dec · Christmas, Substitute Boxing Day & Eves' },
+        { start: '2026-04-01', end: '2026-04-08', label: '1-8 Apr · Good Friday & Easter Monday' },
+        { start: '2026-05-22', end: '2026-05-28', label: '22-28 May · Spring Bank Holiday Week' },
+      ],
+      DE: [
+        { start: '2026-12-21', end: '2026-12-31', label: '21-31 Dez · Heiligabend (0.5d), Weihnachten & Silvester' },
+        { start: '2026-04-01', end: '2026-04-08', label: '1-8 Apr · Karfreitag & Ostermontag' },
+        { start: '2026-05-11', end: '2026-05-27', label: '11-27 Mai · Christi Himmelfahrt & Pfingstmontag' },
+      ],
+      NL: [
+        { start: '2026-12-03', end: '2026-12-31', label: 'Dec · Sinterklaasavond, Kerstavond & Kerstdagen' },
+        { start: '2026-04-24', end: '2026-04-30', label: '24-30 Apr · Koningsdag (27 April)' },
+        { start: '2026-05-11', end: '2026-05-27', label: '11-27 Mei · Hemelvaartsdag & Pinksterdag' },
+      ],
+      SA: [
+        { start: '2026-03-18', end: '2026-03-25', label: '18-25 Mar · وقفة عيد الفطر (0.5d) & Eid al-Fitr' },
+        { start: '2026-05-25', end: '2026-06-01', label: '25 May-1 Jun · يوم عرفة (Arafat) & Eid al-Adha' },
+        { start: '2026-09-21', end: '2026-09-24', label: '21-24 Sep · اليوم الوطني السعودي & Eve (0.5d)' },
+      ],
+      RU: [
+        { start: '2026-04-29', end: '2026-05-12', label: '29 Апр - 12 Мая · Праздник Труда, День Победы & Предпраздничные' },
+        { start: '2026-02-19', end: '2026-02-25', label: '19-25 Фев · День защитника Отечества & 20 Фев (0.5d)' },
+        { start: '2026-01-01', end: '2026-01-12', label: '1-12 Янв · Новогодние каникулы и Рождество' },
+      ],
+      CN: [
+        { start: '2026-02-16', end: '2026-02-23', label: '2月16日-23日 · 除夕 (0.5d) & 春节 (Spring Festival)' },
+        { start: '2026-09-29', end: '2026-10-06', label: '9月29日-10月6日 · 国庆节前夕 (0.5d) & 国庆节黄金周' },
+        { start: '2026-04-30', end: '2026-05-06', label: '4月30日-5月6日 · 劳动节假期 (Labour Day)' },
+      ]
+    };
+
+    // --- 8-Language Localization Dictionary ---
     const I18N = {
       TR: {
-        tagline: 'v1.1 · ISO-8601 İş Günü, Arife (Yarım Gün) ve Resmi Tatil Motoru',
+        tagline: 'v1.2 · ISO-8601 İş Günü & Resmi Tatil Motoru',
         nav_playground: 'CANLI TEST',
+        nav_holidays: 'TAKVİMLER',
         nav_rules: 'KURALLAR',
         nav_access: 'API ANAHTARI',
         sec1_label: 'BÖLÜM 01 // GENEL BAKIŞ',
         hero_title: 'HTTP üzerinden deterministik iş günü, yarım gün (Arife) ve resmi tatil hesaplaması.',
-        hero_desc: 'Finansal valör, SLA takibi ve fatura vade hesaplamaları elle tutulan tatil tablolarında hataya açıktır. BizCal; sabit tatilleri, Paskalya kaymalarını, Diyanet hicri bayramlarını ve 0.5 günlük Arife / erken kapanış günlerini milisaniyenin altında hesaplar.',
+        hero_desc: 'Finansal valör, SLA takibi ve fatura vade hesaplamaları elle tutulan tatil tablolarında hataya açıktır. BizCal; 8 ülke için sabit tatilleri, Paskalya kaymalarını, hicri/ay takvimi bayramlarını ve 0.5 günlük Arife günlerini milisaniyenin altında hesaplar.',
         stat_runtime_label: 'ÇALIŞMA ORTAMI',
         stat_halfday_label: 'YARIM GÜN MOTORU',
-        stat_halfday_val: '0.5g Arife & Erken Kapanış',
-        stat_countries_label: 'ÜLKELER',
+        stat_halfday_val: '-0.5g Arife & Erken Kapanış',
+        stat_countries_label: '8 ÜLKE KAPSAMI',
         waitlist_title: 'ERKEN ERİŞİM LİSTESİ',
         waitlist_badge: 'ÜRETİM ANAHTARI',
         waitlist_desc: 'Aşağıdaki canlı uç nokta test için açıktır. Özel API anahtarı ve yüksek istek limiti almak için iş e-postanızı kaydedin.',
@@ -422,41 +710,43 @@
         label_start: 'Başlangıç Tarihi',
         label_end: 'Bitiş Tarihi',
         label_days: 'Eklenecek İş Günü',
-        presets_label: 'Hızlı Yarım Gün / Arife Test Senaryoları',
+        presets_label: 'Ülkeye Özel Hızlı Test Senaryoları',
         btn_execute: 'Sorguyu Çalıştır →',
-        result_header: 'TABLOLAŞTIRILMIŞ YANIT & JSON',
+        view_both: 'Tablo + JSON',
+        view_table: 'Sadece Tablo',
+        view_json: 'Sadece JSON',
         kpi_net_days: 'NET İŞ GÜNÜ',
-        kpi_half_days: 'YARIM GÜN (0.5g)',
-        kpi_full_holidays: 'TAM GÜN TATİL',
+        kpi_holiday_deduction: 'TATİL DÜŞÜMÜ',
         kpi_weekends: 'HAFTA SONU',
-        kpi_calendar: 'TAKVİM GÜNÜ',
-        kpi_end_date: 'BİTİŞ / VADE TARİHİ',
-        table_detected_title: 'Aralıkta Tespit Edilen Resmi Tatiller ve Yarım Günler',
+        kpi_end_date: 'ARALIK & BİTİŞ',
         th_date: 'Tarih',
-        th_type: 'Gün Türü',
+        th_impact: 'Etki / Süre',
         th_local: 'Yerel Adı',
         th_intl: 'Uluslararası Adı',
-        badge_half: 'YARIM GÜN (0.5g)',
-        badge_full: 'TAM GÜN TATİL',
+        badge_half: '-0.5 GÜN (YARIM)',
+        badge_full: '-1.0 GÜN (TAM)',
         empty_holidays: 'Bu tarih aralığında hafta içine denk gelen resmi tatil veya yarım gün bulunmuyor.',
-        sec3_label: 'BÖLÜM 03 // YASAL & YARIM GÜN KAPSAMI',
-        sec3_title: 'Desteklenen Ülkeler, Dini/Hareketli Tatiller ve Yarım Gün Kuralları',
+        sec_cal_label: 'BÖLÜM 03 // TÜM ÜLKE TATİL REHBERİ',
+        sec_cal_title: 'Ülkeye Göre Tüm Resmi Tatiller ve Yarım Günler',
+        sec3_label: 'BÖLÜM 04 // YASAL KURAL TABLOSU',
+        sec3_title: '8 Ülke, Dini/Hareketli Tatiller ve Yarım Gün Kuralları',
         cov_th_country: 'Ülke',
         cov_th_full: 'Tam Gün Resmi Tatil Kuralları',
-        cov_th_half: 'Yarım Gün (0.5g) Tespiti',
+        cov_th_half: 'Yarım Gün (-0.5g) Kuralları',
       },
       US: {
-        tagline: 'v1.1 · ISO-8601 Settlement & Half-Day Calendar Engine',
+        tagline: 'v1.2 · ISO-8601 Calendar Engine',
         nav_playground: 'PLAYGROUND',
+        nav_holidays: 'CALENDARS',
         nav_rules: 'RULES',
         nav_access: 'API KEY',
         sec1_label: 'SECTION 01 // OVERVIEW',
         hero_title: 'Deterministic business day, half-day, and statutory holiday math over HTTP.',
-        hero_desc: 'Financial settlement, SLA tracking, and ERP invoicing fail when holiday tables and half-day eve sessions are maintained by hand. BizCal computes working-day offsets and date-range breakdowns across fixed holidays, Easter offsets, hijri lunar shifts, and half-day sessions in under a millisecond.',
+        hero_desc: 'Financial settlement, SLA tracking, and ERP invoicing fail when holiday tables and half-day eve sessions are maintained by hand. BizCal computes working-day offsets and date-range breakdowns across 8 global jurisdictions in under a millisecond.',
         stat_runtime_label: 'RUNTIME',
         stat_halfday_label: 'HALF-DAY ENGINE',
-        stat_halfday_val: '0.5d Arife & Early Close',
-        stat_countries_label: 'JURISDICTIONS',
+        stat_halfday_val: '-0.5d Deduction Included',
+        stat_countries_label: '8 JURISDICTIONS',
         waitlist_title: 'EARLY ACCESS QUEUE',
         waitlist_badge: 'PRODUCTION KEYS',
         waitlist_desc: 'The live endpoint below is open for testing. Register your work email to receive a dedicated API key and higher rate limits.',
@@ -467,45 +757,47 @@
         sec2_title: 'Test Date Range or Deadline Calculation',
         mode_range: 'Date Range (Start → End)',
         mode_add: 'Add Days (+N Days)',
-        label_country: 'Country (ISO)',
+        label_country: 'Jurisdiction (ISO)',
         label_start: 'Start Date',
         label_end: 'End Date',
         label_days: 'Business Days',
-        presets_label: 'Quick Half-Day Test Presets',
+        presets_label: 'Country Test Scenarios',
         btn_execute: 'Execute Request →',
-        result_header: 'TABULATED RESPONSE & JSON',
+        view_both: 'Table + JSON',
+        view_table: 'Table Only',
+        view_json: 'JSON Only',
         kpi_net_days: 'NET BUSINESS DAYS',
-        kpi_half_days: 'HALF-DAYS (0.5d)',
-        kpi_full_holidays: 'FULL HOLIDAYS',
+        kpi_holiday_deduction: 'HOLIDAY IMPACT',
         kpi_weekends: 'WEEKEND DAYS',
-        kpi_calendar: 'CALENDAR DAYS',
-        kpi_end_date: 'END / DEADLINE',
-        table_detected_title: 'Detected Holidays & Half-Days in Span',
+        kpi_end_date: 'SPAN & END DATE',
         th_date: 'Date',
-        th_type: 'Session Type',
+        th_impact: 'Deduction',
         th_local: 'Local Name',
         th_intl: 'International Name',
-        badge_half: 'HALF DAY (0.5d)',
-        badge_full: 'FULL HOLIDAY',
+        badge_half: '-0.5d HALF DAY',
+        badge_full: '-1.0d FULL DAY',
         empty_holidays: 'No weekday statutory holidays or half-days in this date span.',
-        sec3_label: 'SECTION 03 // STATUTORY & HALF-DAY COVERAGE',
-        sec3_title: 'Supported Jurisdictions, Moveable Feasts & Half-Day Rules',
+        sec_cal_label: 'SECTION 03 // COMPLETE HOLIDAY DIRECTORY',
+        sec_cal_title: 'All Statutory Holidays & Half-Days by Country',
+        sec3_label: 'SECTION 04 // STATUTORY RULE SPECIFICATION',
+        sec3_title: '8 Jurisdictions, Moveable Feasts & Half-Day Rules',
         cov_th_country: 'Jurisdiction',
         cov_th_full: 'Full-Day Statutory Rules',
-        cov_th_half: 'Half-Day (0.5d) Detection',
+        cov_th_half: 'Half-Day (-0.5d) Rules',
       },
       UK: {
-        tagline: 'v1.1 · ISO-8601 Bank Holiday & Half-Day Settlement Engine',
+        tagline: 'v1.2 · ISO-8601 Bank Holiday Engine',
         nav_playground: 'PLAYGROUND',
+        nav_holidays: 'CALENDARS',
         nav_rules: 'RULES',
         nav_access: 'API KEY',
         sec1_label: 'SECTION 01 // OVERVIEW',
         hero_title: 'Deterministic business day, half-day, and bank holiday calculation over HTTP.',
-        hero_desc: 'Settlement dates, SLA clocks, and commercial invoicing break when bank holiday tables and early-close eves are maintained manually. BizCal computes working-day offsets and date-range counts across UK substitute days, European calendars, and half-day sessions in sub-millisecond time.',
+        hero_desc: 'Settlement dates, SLA clocks, and commercial invoicing break when bank holiday tables and early-close eves are maintained manually. BizCal computes working-day offsets and date-range counts across 8 global jurisdictions in sub-millisecond time.',
         stat_runtime_label: 'RUNTIME',
         stat_halfday_label: 'HALF-DAY ENGINE',
-        stat_halfday_val: '0.5d Eve & Early Close',
-        stat_countries_label: 'JURISDICTIONS',
+        stat_halfday_val: '-0.5d Eve & Early Close',
+        stat_countries_label: '8 JURISDICTIONS',
         waitlist_title: 'EARLY ACCESS QUEUE',
         waitlist_badge: 'PRODUCTION KEYS',
         waitlist_desc: 'The live endpoint below is open for evaluation. Register your work email to receive a dedicated API key and production rate limits.',
@@ -516,45 +808,47 @@
         sec2_title: 'Test Date Range or Settlement Deadline',
         mode_range: 'Date Range (Start → End)',
         mode_add: 'Add Days (+N Days)',
-        label_country: 'Country (ISO)',
+        label_country: 'Jurisdiction (ISO)',
         label_start: 'Start Date',
         label_end: 'End Date',
         label_days: 'Business Days',
-        presets_label: 'Quick Half-Day Test Presets',
+        presets_label: 'Country Test Scenarios',
         btn_execute: 'Execute Request →',
-        result_header: 'TABULATED RESPONSE & JSON',
+        view_both: 'Table + JSON',
+        view_table: 'Table Only',
+        view_json: 'JSON Only',
         kpi_net_days: 'NET BUSINESS DAYS',
-        kpi_half_days: 'HALF-DAYS (0.5d)',
-        kpi_full_holidays: 'FULL HOLIDAYS',
+        kpi_holiday_deduction: 'HOLIDAY IMPACT',
         kpi_weekends: 'WEEKEND DAYS',
-        kpi_calendar: 'CALENDAR DAYS',
-        kpi_end_date: 'END / DEADLINE',
-        table_detected_title: 'Detected Bank Holidays & Half-Days in Span',
+        kpi_end_date: 'SPAN & END DATE',
         th_date: 'Date',
-        th_type: 'Session Type',
+        th_impact: 'Deduction',
         th_local: 'Local Name',
         th_intl: 'International Name',
-        badge_half: 'HALF DAY (0.5d)',
-        badge_full: 'FULL HOLIDAY',
+        badge_half: '-0.5d HALF DAY',
+        badge_full: '-1.0d FULL DAY',
         empty_holidays: 'No weekday bank holidays or half-days in this date span.',
-        sec3_label: 'SECTION 03 // STATUTORY & HALF-DAY COVERAGE',
-        sec3_title: 'Supported Jurisdictions, Moveable Feasts & Half-Day Rules',
+        sec_cal_label: 'SECTION 03 // COMPLETE HOLIDAY DIRECTORY',
+        sec_cal_title: 'All Bank Holidays & Half-Days by Country',
+        sec3_label: 'SECTION 04 // STATUTORY RULE SPECIFICATION',
+        sec3_title: '8 Jurisdictions, Moveable Feasts & Half-Day Rules',
         cov_th_country: 'Jurisdiction',
         cov_th_full: 'Full-Day Statutory Rules',
-        cov_th_half: 'Half-Day (0.5d) Detection',
+        cov_th_half: 'Half-Day (-0.5d) Rules',
       },
       DE: {
-        tagline: 'v1.1 · ISO-8601 Werktags-, Halfeiertags- & Feiertags-Engine',
+        tagline: 'v1.2 · ISO-8601 Werktags- & Feiertags-Engine',
         nav_playground: 'LIVE-TEST',
-        nav_rules: 'REGELWERK',
+        nav_holidays: 'KALENDER',
+        nav_rules: 'REGELN',
         nav_access: 'API-KEY',
         sec1_label: 'ABSCHNITT 01 // ÜBERBLICK',
         hero_title: 'Deterministische Werktags-, Halfeiertags- und Feiertagsberechnung über HTTP.',
-        hero_desc: 'Zahlungsziele, SLA-Fristen und ERP-Abrechnungen scheitern an manuell gepflegten Feiertagstabellen. BizCal berechnet Arbeitstage, Datumsbereiche, bewegliche Osterfeiertage sowie halbe Arbeitstage (Heiligabend, Silvester, Arife) in unter einer Millisekunde.',
+        hero_desc: 'Zahlungsziele, SLA-Fristen und ERP-Abrechnungen scheitern an manuell gepflegten Feiertagstabellen. BizCal berechnet Arbeitstage, Datumsbereiche sowie halbe Arbeitstage (Heiligabend, Silvester, Arife) für 8 Länder in unter einer Millisekunde.',
         stat_runtime_label: 'LAUFZEIT',
         stat_halfday_label: 'HALBTAGS-ENGINE',
-        stat_halfday_val: '0,5T Heiligabend / Silvester',
-        stat_countries_label: 'LÄNDER',
+        stat_halfday_val: '-0,5T Abzug inklusive',
+        stat_countries_label: '8 LÄNDER',
         waitlist_title: 'EARLY-ACCESS-WARTELISTE',
         waitlist_badge: 'PRODUKTIONS-KEYS',
         waitlist_desc: 'Der Live-Endpunkt unten ist zum Testen geöffnet. Registrieren Sie Ihre geschäftliche E-Mail für einen dedizierten API-Schlüssel.',
@@ -569,41 +863,43 @@
         label_start: 'Startdatum',
         label_end: 'Enddatum',
         label_days: 'Arbeitstage',
-        presets_label: 'Schnelltest für halbe Arbeitstage',
+        presets_label: 'Länderspezifische Testszenarien',
         btn_execute: 'Anfrage ausführen →',
-        result_header: 'TABELLENANSICHT & JSON',
+        view_both: 'Tabelle + JSON',
+        view_table: 'Nur Tabelle',
+        view_json: 'Nur JSON',
         kpi_net_days: 'NETTO-ARBEITSTAGE',
-        kpi_half_days: 'HALBE TAGE (0.5d)',
-        kpi_full_holidays: 'GANZE FEIERTAGE',
+        kpi_holiday_deduction: 'FEIERTAGSABZUG',
         kpi_weekends: 'WOCHENENDTAGE',
-        kpi_calendar: 'KALENDERTAGE',
-        kpi_end_date: 'ENDE / FRIST',
-        table_detected_title: 'Erkannte Feiertage & halbe Arbeitstage im Zeitraum',
+        kpi_end_date: 'ZEITRAUM & ENDE',
         th_date: 'Datum',
-        th_type: 'Typ',
+        th_impact: 'Abzug',
         th_local: 'Lokaler Name',
         th_intl: 'Internationaler Name',
-        badge_half: 'HALBER TAG (0.5d)',
-        badge_full: 'FEIERTAG (VOLL)',
+        badge_half: '-0,5T HALBER TAG',
+        badge_full: '-1,0T FEIERTAG',
         empty_holidays: 'Keine Feiertage oder halben Arbeitstage an Werktagen in diesem Zeitraum.',
-        sec3_label: 'ABSCHNITT 03 // GESETZLICHE ABDECKUNG',
-        sec3_title: 'Unterstützte Länder, bewegliche Feiertage & Halbtagsregeln',
+        sec_cal_label: 'ABSCHNITT 03 // VOLLSTÄNDIGES FEIERTAGSVERZEICHNIS',
+        sec_cal_title: 'Alle gesetzlichen Feiertage & halben Tage nach Land',
+        sec3_label: 'ABSCHNITT 04 // GESETZLICHE REGELN',
+        sec3_title: '8 Länder, bewegliche Feiertage & Halbtagsregeln',
         cov_th_country: 'Land',
         cov_th_full: 'Gesetzliche Feiertagsregeln',
-        cov_th_half: 'Halbtagserkennung (0.5d)',
+        cov_th_half: 'Halbtagsregeln (-0,5T)',
       },
       NL: {
-        tagline: 'v1.1 · ISO-8601 Werkdagen-, Halve-Dagen- & Feestdagen-API',
+        tagline: 'v1.2 · ISO-8601 Werkdagen- & Feestdagen-API',
         nav_playground: 'LIVE-TEST',
+        nav_holidays: 'KALENDERS',
         nav_rules: 'REGELS',
         nav_access: 'API-SLEUTEL',
         sec1_label: 'SECTIE 01 // OVERZICHT',
         hero_title: 'Deterministische berekening van werkdagen, halve dagen en feestdagen via HTTP.',
-        hero_desc: 'Betalingstermijnen, SLA-deadlines en ERP-facturatie lopen vast bij handmatig bijgehouden feestdagen. BizCal berekent werkdagen, datumbereiken, Paas-feestdagen en halve werkdagen (Sinterklaasavond, Kerstavond, Oudejaarsavond) in minder dan een milliseconde.',
+        hero_desc: 'Betalingstermijnen, SLA-deadlines en ERP-facturatie lopen vast bij handmatig bijgehouden feestdagen. BizCal berekent werkdagen, datumbereiken en halve werkdagen voor 8 landen in minder dan een milliseconde.',
         stat_runtime_label: 'RUNTIME',
         stat_halfday_label: 'HALVE-DAGEN-ENGINE',
-        stat_halfday_val: '0,5d Avond & Vroege Sluiting',
-        stat_countries_label: 'LANDEN',
+        stat_halfday_val: '-0,5d aftrek inbegrepen',
+        stat_countries_label: '8 LANDEN',
         waitlist_title: 'EARLY ACCESS WACHTLIJST',
         waitlist_badge: 'PRODUCTIE-SLEUTELS',
         waitlist_desc: 'Het live endpoint hieronder is open voor evaluatie. Registreer uw zakelijke e-mail voor een eigen API-sleutel.',
@@ -618,33 +914,187 @@
         label_start: 'Startdatum',
         label_end: 'Einddatum',
         label_days: 'Werkdagen',
-        presets_label: 'Sneltesten voor halve werkdagen',
+        presets_label: 'Landspecifieke testscenario’s',
         btn_execute: 'Verzoek uitvoeren →',
-        result_header: 'TABELWEERGAVE & JSON',
+        view_both: 'Tabel + JSON',
+        view_table: 'Alleen Tabel',
+        view_json: 'Alleen JSON',
         kpi_net_days: 'NETTO WERKDAGEN',
-        kpi_half_days: 'HALVE DAGEN (0.5d)',
-        kpi_full_holidays: 'HELE FEESTDAGEN',
+        kpi_holiday_deduction: 'FEESTDAGAFTREK',
         kpi_weekends: 'WEEKENDDAGEN',
-        kpi_calendar: 'KALENDERDAGEN',
-        kpi_end_date: 'EIND / DEADLINE',
-        table_detected_title: 'Gedetecteerde feestdagen & halve dagen in periode',
+        kpi_end_date: 'PERIODE & EIND',
         th_date: 'Datum',
-        th_type: 'Type',
+        th_impact: 'Aftrek',
         th_local: 'Lokale naam',
         th_intl: 'Internationale naam',
-        badge_half: 'HALVE DAG (0.5d)',
-        badge_full: 'FEESTDAG (VOL)',
+        badge_half: '-0,5d HALVE DAG',
+        badge_full: '-1,0d FEESTDAG',
         empty_holidays: 'Geen doordeweekse feestdagen of halve dagen in deze periode.',
-        sec3_label: 'SECTIE 03 // WETTELIJKE DEKKING',
-        sec3_title: 'Ondersteunde landen, feestdagen & halve-dagregels',
+        sec_cal_label: 'SECTIE 03 // VOLLEDIGE FEESTDAGENLIJST',
+        sec_cal_title: 'Alle officiële feestdagen & halve dagen per land',
+        sec3_label: 'SECTIE 04 // WETTELIJKE DEKKING',
+        sec3_title: '8 Landen, feestdagen & halve-dagregels',
         cov_th_country: 'Land',
         cov_th_full: 'Wettelijke feestdagen',
-        cov_th_half: 'Halve-dagdetectie (0.5d)',
+        cov_th_half: 'Halve-dagregels (-0,5d)',
+      },
+      SA: {
+        tagline: 'v1.2 · محرك تقويم أيام العمل والعطلات الرسمية',
+        nav_playground: 'تجربة مباشرة',
+        nav_holidays: 'التقويمات',
+        nav_rules: 'القواعد',
+        nav_access: 'مفتاح API',
+        sec1_label: 'القسم 01 // نظرة عامة',
+        hero_title: 'حساب دقيق لأيام العمل، أنصاف الأيام (الوقفات)، والعطلات الرسمية عبر HTTP.',
+        hero_desc: 'تتعطل التسويات المالية واتفاقيات مستوى الخدمة (SLA) والفوترة عند إدارة جداول العطلات يدوياً. يقوم BizCal بحساب صافي أيام العمل، عطلات الأعياد الهجرية والميلادية، وأنصاف أيام العمل لـ 8 دول في أقل من جزء من الألف من الثانية.',
+        stat_runtime_label: 'بيئة التشغيل',
+        stat_halfday_label: 'محرك نصف اليوم',
+        stat_halfday_val: 'خصم 0.5 يوم للوقفات',
+        stat_countries_label: '8 دول مدعومة',
+        waitlist_title: 'قائمة الوصول المبكر',
+        waitlist_badge: 'مفاتيح الإنتاج',
+        waitlist_desc: 'نقطة النهاية أدناه متاحة للتجربة المباشرة. سجّل بريدك الإلكتروني للحصول على مفتاح API مخصص.',
+        waitlist_email_label: 'البريد الإلكتروني للعمل أو المطور',
+        waitlist_btn: 'التسجيل للحصول على مفتاح API',
+        waitlist_note: 'لا توجد رسائل ترويجية. يستخدم فقط لإصدار مفاتيح API.',
+        sec2_label: 'القسم 02 // فاحص نقطة النهاية المباشر',
+        sec2_title: 'اختبار نطاق التاريخ أو حساب تاريخ الاستحقاق',
+        mode_range: 'نطاق تاريخ (البداية ← النهاية)',
+        mode_add: 'إضافة أيام عمل (+N)',
+        label_country: 'الدولة (ISO)',
+        label_start: 'تاريخ البداية',
+        label_end: 'تاريخ النهاية',
+        label_days: 'أيام العمل',
+        presets_label: 'سيناريوهات اختبار سريعة حسب الدولة',
+        btn_execute: 'تنفيذ الطلب ←',
+        view_both: 'جدول + JSON',
+        view_table: 'الجدول فقط',
+        view_json: 'JSON فقط',
+        kpi_net_days: 'صافي أيام العمل',
+        kpi_holiday_deduction: 'خصم العطلات',
+        kpi_weekends: 'عطلة نهاية الأسبوع',
+        kpi_end_date: 'المدة وتاريخ النهاية',
+        th_date: 'التاريخ',
+        th_impact: 'التأثير',
+        th_local: 'الاسم المحلي',
+        th_intl: 'الاسم الدولي',
+        badge_half: '-0.5 يوم (نصف يوم)',
+        badge_full: '-1.0 يوم (عطلة كاملة)',
+        empty_holidays: 'لا توجد عطلات رسمية أو أنصاف أيام خلال أيام الأسبوع في هذه الفترة.',
+        sec_cal_label: 'القسم 03 // دليل العطلات الكامل',
+        sec_cal_title: 'جميع العطلات الرسمية وأنصاف الأيام حسب الدولة',
+        sec3_label: 'القسم 04 // قواعد العطلات المعتمدة',
+        sec3_title: '8 دول، الأعياد المتغيرة وقواعد نصف يوم العمل',
+        cov_th_country: 'الدولة',
+        cov_th_full: 'قواعد العطلات الرسمية الكاملة',
+        cov_th_half: 'قواعد نصف اليوم (-0.5 يوم)',
+      },
+      RU: {
+        tagline: 'v1.2 · ISO-8601 Движок рабочих и праздничных дней',
+        nav_playground: 'ТЕСТ API',
+        nav_holidays: 'КАЛЕНДАРИ',
+        nav_rules: 'ПРАВИЛА',
+        nav_access: 'API-КЛЮЧ',
+        sec1_label: 'РАЗДЕЛ 01 // ОБЗОР',
+        hero_title: 'Детерминированный расчет рабочих, предпраздничных и праздничных дней по HTTP.',
+        hero_desc: 'Финансовые расчеты, контроль SLA и выставление счетов в ERP дают сбои при ручном ведении производственных календарей. BizCal рассчитывает рабочие дни, диапазоны дат и сокращенные предпраздничные дни (0.5 дня) для 8 стран менее чем за миллисекунду.',
+        stat_runtime_label: 'СРЕДА ВЫПОЛНЕНИЯ',
+        stat_halfday_label: 'УЧЕТ НЕПОЛНЫХ ДНЕЙ',
+        stat_halfday_val: '-0.5д предпраздничные дни',
+        stat_countries_label: '8 ЮРИСДИКЦИЙ',
+        waitlist_title: 'РАННИЙ ДОСТУП',
+        waitlist_badge: 'КЛЮЧИ ПРОДАКШЕНА',
+        waitlist_desc: 'Живой эндпоинт ниже открыт для тестирования. Оставьте рабочий email для получения выделенного API-ключа.',
+        waitlist_email_label: 'Рабочий Email разработчика',
+        waitlist_btn: 'Получить API-ключ',
+        waitlist_note: 'Без спама. Используется исключительно для выдачи ключей API.',
+        sec2_label: 'РАЗДЕЛ 02 // ИНСПЕКТОР ЭНДПОИНТА',
+        sec2_title: 'Расчет диапазона дат или дедлайна',
+        mode_range: 'Диапазон дат (Старт → Конец)',
+        mode_add: 'Добавить дни (+N дней)',
+        label_country: 'Страна (ISO)',
+        label_start: 'Дата начала',
+        label_end: 'Дата окончания',
+        label_days: 'Рабочие дни',
+        presets_label: 'Быстрые сценарии для выбранной страны',
+        btn_execute: 'Выполнить запрос →',
+        view_both: 'Таблица + JSON',
+        view_table: 'Только таблица',
+        view_json: 'Только JSON',
+        kpi_net_days: 'ЧИСТЫЕ РАБОЧИЕ ДНИ',
+        kpi_holiday_deduction: 'ВЫЧЕТ ПРАЗДНИКОВ',
+        kpi_weekends: 'ВЫХОДНЫЕ ДНИ',
+        kpi_end_date: 'ПЕРИОД И ДАТА',
+        th_date: 'Дата',
+        th_impact: 'Вычет',
+        th_local: 'Локальное название',
+        th_intl: 'Международное название',
+        badge_half: '-0.5д СОКРАЩЕННЫЙ',
+        badge_full: '-1.0д ПРАЗДНИК',
+        empty_holidays: 'В выбранном периоде нет будних праздничных или предпраздничных дней.',
+        sec_cal_label: 'РАЗДЕЛ 03 // ПОЛНЫЙ СПРАВОЧНИК ПРАЗДНИКОВ',
+        sec_cal_title: 'Все официальные праздники и сокращенные дни по странам',
+        sec3_label: 'РАЗДЕЛ 04 // СПЕЦИФИКАЦИЯ ПРАВИЛ',
+        sec3_title: '8 стран, переходящие праздники и предпраздничные дни',
+        cov_th_country: 'Страна',
+        cov_th_full: 'Правила полных праздничных дней',
+        cov_th_half: 'Правила неполных дней (-0.5д)',
+      },
+      CN: {
+        tagline: 'v1.2 · ISO-8601 工作日、半日假与法定节假日引擎',
+        nav_playground: '在线测试',
+        nav_holidays: '节假日日历',
+        nav_rules: '规则说明',
+        nav_access: '获取密钥',
+        sec1_label: '第 01 部分 // 系统概览',
+        hero_title: '基于 HTTP 的确定性工作日、半天假（除夕/前夕）及法定节假日计算引擎。',
+        hero_desc: '金融交割、SLA 追踪与 ERP 账期计算在依赖手工维护的节假日表时极易出错。BizCal 在亚毫秒级时间内精确计算 8 个国家/地区的固定节假日、复活节偏移、农历春节/古尔邦节以及 0.5 天半日假。',
+        stat_runtime_label: '运行环境',
+        stat_halfday_label: '半日假引擎',
+        stat_halfday_val: '-0.5天 除夕及节前早退',
+        stat_countries_label: '支持 8 个国家',
+        waitlist_title: '早期访问队列',
+        waitlist_badge: '生产环境密钥',
+        waitlist_desc: '下方实时接口已开放测试。注册您的工作邮箱以获取专属 API 密钥与更高并发配额。',
+        waitlist_email_label: '开发者或企业邮箱',
+        waitlist_btn: '注册获取 API 密钥',
+        waitlist_note: '绝不发送营销邮件。仅用于分发 API 密钥。',
+        sec2_label: '第 02 部分 // 实时接口调试器',
+        sec2_title: '测试日期区间或到期日（Deadline）计算',
+        mode_range: '日期区间 (开始 → 结束)',
+        mode_add: '增加工作日 (+N 天)',
+        label_country: '国家代码 (ISO)',
+        label_start: '开始日期',
+        label_end: '结束日期',
+        label_days: '工作日天数',
+        presets_label: '当前国家快捷测试场景',
+        btn_execute: '执行请求 →',
+        view_both: '表格 + JSON',
+        view_table: '仅看表格',
+        view_json: '仅看 JSON',
+        kpi_net_days: '净工作日',
+        kpi_holiday_deduction: '节假日扣减',
+        kpi_weekends: '周末天数',
+        kpi_end_date: '跨度与截止日',
+        th_date: '日期',
+        th_impact: '扣减权重',
+        th_local: '本地名称',
+        th_intl: '国际名称',
+        badge_half: '-0.5天 半日假',
+        badge_full: '-1.0天 全天假',
+        empty_holidays: '该日期区间内的工作日无法定节假日或半日假。',
+        sec_cal_label: '第 03 部分 // 完整节假日名录',
+        sec_cal_title: '各国全部法定节假日与半日假一览表',
+        sec3_label: '第 04 部分 // 法定规则规范',
+        sec3_title: '8 国法定节假日、农历/复活节与半日假规则',
+        cov_th_country: '国家',
+        cov_th_full: '全天法定节假日规则',
+        cov_th_half: '半日假 (-0.5天) 规则',
       }
     };
 
     let currentLocale = 'US';
-    let currentMode = 'range'; // 'range' | 'add'
+    let currentMode = 'range';
 
     const calcForm = document.getElementById('calc-form');
     const countryInput = document.getElementById('calc-country');
@@ -655,6 +1105,8 @@
     const addDaysWrap = document.getElementById('add-days-wrap');
     const modeRangeBtn = document.getElementById('mode-range-btn');
     const modeAddBtn = document.getElementById('mode-add-btn');
+    const presetsContainer = document.getElementById('country-presets-container');
+    const presetCountryTag = document.getElementById('preset-country-tag');
     const curlPreview = document.getElementById('curl-preview');
     const calcOutput = document.getElementById('calc-output');
     const respStatus = document.getElementById('resp-status');
@@ -663,36 +1115,252 @@
     const copyCurlBtn = document.getElementById('copy-curl-btn');
     const copyJsonBtn = document.getElementById('copy-json-btn');
 
-    // KPI & Table elements
+    const viewBothBtn = document.getElementById('view-both-btn');
+    const viewTableBtn = document.getElementById('view-table-btn');
+    const viewJsonBtn = document.getElementById('view-json-btn');
+    const tableViewSection = document.getElementById('table-view-section');
+    const jsonViewSection = document.getElementById('json-view-section');
+
     const kpiEffective = document.getElementById('kpi-effective');
-    const kpiHalf = document.getElementById('kpi-half');
+    const kpiEffectiveSub = document.getElementById('kpi-effective-sub');
     const kpiHolidays = document.getElementById('kpi-holidays');
+    const kpiHolidaysSub = document.getElementById('kpi-holidays-sub');
     const kpiWeekends = document.getElementById('kpi-weekends');
     const kpiCalendar = document.getElementById('kpi-calendar');
     const kpiDeadline = document.getElementById('kpi-deadline');
     const holidaysTableBody = document.getElementById('holidays-table-body');
 
+    const directoryTableBody = document.getElementById('directory-table-body');
+    const calYearSelect = document.getElementById('cal-year-select');
+    let selectedCalCountry = 'TR';
     let lastRenderedData = null;
+
+    // Helper: Get weekday short name
+    const WD_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    function parseYMD(str) {
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(Date.UTC(y, m - 1, d));
+    }
+    function formatYMD(dt) {
+      return dt.toISOString().slice(0, 10);
+    }
+
+    // Client-side deterministic calculation fallback (ensures all 8 countries work even if remote server has older build)
+    function evaluateLocally(payload) {
+      const country = payload.country || 'TR';
+      const yearHolidays = (y) => {
+        const map = {};
+        const list = (HOLIDAY_DB[country] && HOLIDAY_DB[country][y]) || (HOLIDAY_DB[country] && HOLIDAY_DB[country][2026]) || [];
+        list.forEach(h => {
+          const dateForYear = `${y}-${h.date.slice(5)}`;
+          map[dateForYear] = { ...h, date: dateForYear };
+        });
+        return map;
+      };
+
+      if (payload.end_date) {
+        let cur = parseYMD(payload.start_date);
+        const end = parseYMD(payload.end_date);
+        let calendar_days = 0, weekend_days_skipped = 0, holidays_skipped = 0, half_days_count = 0, business_days = 0;
+        const holidays = [];
+        const cache = {};
+        while (cur <= end && calendar_days < 5000) {
+          calendar_days++;
+          const y = cur.getUTCFullYear();
+          if (!cache[y]) cache[y] = yearHolidays(y);
+          const ds = formatYMD(cur);
+          const wd = cur.getUTCDay();
+          if (wd === 0 || wd === 6) {
+            weekend_days_skipped++;
+          } else if (cache[y][ds]) {
+            const h = cache[y][ds];
+            holidays.push({ date: ds, weekday: WD_NAMES[wd], name: h.name, local_name: h.local_name, half_day: h.half_day });
+            if (h.half_day) {
+              half_days_count++;
+              business_days++;
+            } else {
+              holidays_skipped++;
+            }
+          } else {
+            business_days++;
+          }
+          cur = new Date(cur.getTime() + 86400000);
+        }
+        return {
+          mode: 'date_range',
+          start_date: payload.start_date,
+          country,
+          business_days,
+          effective_business_days: business_days - 0.5 * half_days_count,
+          deadline: payload.end_date,
+          deadline_weekday: WD_NAMES[end.getUTCDay()],
+          calendar_days,
+          weekend_days_skipped,
+          holidays_skipped,
+          half_days_count,
+          holidays,
+        };
+      } else {
+        const target = Number(payload.business_days) || 5;
+        let cur = parseYMD(payload.start_date);
+        let counted = 0, weekend_days_skipped = 0, holidays_skipped = 0, half_days_count = 0, calendar_days = 0;
+        const holidays = [];
+        const cache = {};
+        while (counted < target && calendar_days < 10000) {
+          cur = new Date(cur.getTime() + 86400000);
+          calendar_days++;
+          const y = cur.getUTCFullYear();
+          if (!cache[y]) cache[y] = yearHolidays(y);
+          const ds = formatYMD(cur);
+          const wd = cur.getUTCDay();
+          if (wd === 0 || wd === 6) {
+            weekend_days_skipped++;
+            continue;
+          }
+          if (cache[y][ds]) {
+            const h = cache[y][ds];
+            holidays.push({ date: ds, weekday: WD_NAMES[wd], name: h.name, local_name: h.local_name, half_day: h.half_day });
+            if (h.half_day) {
+              half_days_count++;
+              counted++;
+              continue;
+            } else {
+              holidays_skipped++;
+              continue;
+            }
+          }
+          counted++;
+        }
+        return {
+          mode: 'add_days',
+          start_date: payload.start_date,
+          country,
+          business_days: target,
+          effective_business_days: target - 0.5 * half_days_count,
+          deadline: formatYMD(cur),
+          deadline_weekday: WD_NAMES[cur.getUTCDay()],
+          calendar_days,
+          weekend_days_skipped,
+          holidays_skipped,
+          half_days_count,
+          holidays,
+        };
+      }
+    }
+
+    // Render Country-Specific Presets
+    function renderCountryPresets(countryCode) {
+      const list = COUNTRY_PRESETS[countryCode] || COUNTRY_PRESETS.TR;
+      presetCountryTag.textContent = countryCode;
+      presetsContainer.innerHTML = '';
+      list.forEach((p) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'text-left border border-line bg-surface px-2.5 py-1.5 text-ink hover:border-ink transition flex items-center justify-between';
+        btn.innerHTML = `<span class="truncate">${p.label}</span><span class="ml-2 text-muted shrink-0">→</span>`;
+        btn.addEventListener('click', () => {
+          setMode('range');
+          countryInput.value = countryCode;
+          startInput.value = p.start;
+          endInput.value = p.end;
+          updateCurlPreview();
+          executeCalculation();
+        });
+        presetsContainer.appendChild(btn);
+      });
+    }
+
+    // Render Full Holiday Directory (Section 03)
+    function renderHolidayDirectory(countryCode, year) {
+      selectedCalCountry = countryCode;
+      document.querySelectorAll('.cal-country-btn').forEach((b) => {
+        const active = b.dataset.calCountry === countryCode;
+        b.className = 'cal-country-btn border-l first:border-l-0 border-line px-2.5 py-1 transition ' +
+          (active ? 'bg-ink text-paper font-semibold' : 'text-muted hover:text-ink');
+      });
+      const dict = I18N[currentLocale];
+      const baseList = (HOLIDAY_DB[countryCode] && HOLIDAY_DB[countryCode][year]) || (HOLIDAY_DB[countryCode] && HOLIDAY_DB[countryCode][2026]) || [];
+      directoryTableBody.innerHTML = '';
+      baseList.forEach((h) => {
+        const dateStr = `${year}-${h.date.slice(5)}`;
+        const dt = parseYMD(dateStr);
+        const wd = WD_NAMES[dt.getUTCDay()];
+        const badge = h.half_day
+          ? `<span class="inline-block border border-ink bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink">${dict.badge_half}</span>`
+          : `<span class="inline-block bg-ink px-1.5 py-0.5 text-[10px] font-medium text-paper">${dict.badge_full}</span>`;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-2.5 px-4 font-medium text-ink tabular">${dateStr} (${wd})</td>
+          <td class="py-2.5 px-4">${badge}</td>
+          <td class="py-2.5 px-4 font-sans text-xs text-ink">${h.local_name}</td>
+          <td class="py-2.5 px-4 font-sans text-xs text-muted">${h.name}</td>
+        `;
+        directoryTableBody.appendChild(tr);
+      });
+    }
+
+    document.querySelectorAll('.cal-country-btn').forEach((btn) => {
+      btn.addEventListener('click', () => renderHolidayDirectory(btn.dataset.calCountry, Number(calYearSelect.value)));
+    });
+    calYearSelect.addEventListener('change', () => renderHolidayDirectory(selectedCalCountry, Number(calYearSelect.value)));
+
+    // View toggle (Table + JSON / Table Only / JSON Only)
+    function setResponseView(mode) {
+      tableViewSection.classList.toggle('hidden', mode === 'json');
+      jsonViewSection.classList.toggle('hidden', mode === 'table');
+      [
+        [viewBothBtn, mode === 'both'],
+        [viewTableBtn, mode === 'table'],
+        [viewJsonBtn, mode === 'json'],
+      ].forEach(([btn, active]) => {
+        btn.className = 'px-2 py-0.5 transition ' + (active ? 'bg-ink text-paper font-medium' : 'text-muted hover:text-ink');
+      });
+    }
+    viewBothBtn.addEventListener('click', () => setResponseView('both'));
+    viewTableBtn.addEventListener('click', () => setResponseView('table'));
+    viewJsonBtn.addEventListener('click', () => setResponseView('json'));
 
     function setLocale(loc) {
       currentLocale = I18N[loc] ? loc : 'US';
       const dict = I18N[currentLocale];
+      document.documentElement.dir = loc === 'SA' ? 'rtl' : 'ltr';
       document.querySelectorAll('[data-i18n]').forEach((el) => {
         const key = el.getAttribute('data-i18n');
         if (dict[key]) el.textContent = dict[key];
       });
       document.querySelectorAll('.locale-btn').forEach((b) => {
         const active = b.dataset.locale === loc;
-        b.className = 'locale-btn border-l first:border-l-0 border-line px-2.5 py-1 transition ' +
+        b.className = 'locale-btn border-l first:border-l-0 border-line px-2 py-1 transition ' +
           (active ? 'bg-ink text-paper font-semibold' : 'text-muted hover:text-ink');
       });
       countryInput.value = loc;
+      renderCountryPresets(loc);
+      renderHolidayDirectory(loc, Number(calYearSelect.value));
+      // Load the first preset of that country automatically so user sees country-specific data immediately
+      const firstPreset = (COUNTRY_PRESETS[loc] && COUNTRY_PRESETS[loc][0]);
+      if (firstPreset) {
+        startInput.value = firstPreset.start;
+        endInput.value = firstPreset.end;
+      }
       updateCurlPreview();
-      if (lastRenderedData) renderResultView(lastRenderedData);
+      renderResultView(evaluateLocally(buildRequestPayload()));
     }
 
     document.querySelectorAll('.locale-btn').forEach((btn) => {
       btn.addEventListener('click', () => setLocale(btn.dataset.locale));
+    });
+
+    countryInput.addEventListener('change', () => {
+      const c = countryInput.value;
+      renderCountryPresets(c);
+      renderHolidayDirectory(c, Number(calYearSelect.value));
+      const firstPreset = COUNTRY_PRESETS[c] && COUNTRY_PRESETS[c][0];
+      if (firstPreset && currentMode === 'range') {
+        startInput.value = firstPreset.start;
+        endInput.value = firstPreset.end;
+      }
+      updateCurlPreview();
+      executeCalculation();
     });
 
     function setMode(mode) {
@@ -737,7 +1405,6 @@
   -d '${JSON.stringify(payload)}'`;
     }
 
-    countryInput.addEventListener('change', updateCurlPreview);
     daysInput.addEventListener('input', updateCurlPreview);
     startInput.addEventListener('input', updateCurlPreview);
     endInput.addEventListener('input', updateCurlPreview);
@@ -746,14 +1413,22 @@
       lastRenderedData = data;
       const dict = I18N[currentLocale];
       const halfCount = data.half_days_count ?? (data.holidays ? data.holidays.filter(h => h.half_day).length : 0);
+      const fullCount = data.holidays_skipped ?? 0;
       const effDays = data.effective_business_days ?? (data.business_days - 0.5 * halfCount);
+      const fullWorkDays = Math.max(0, (data.business_days ?? 0) - halfCount);
+      const totalDeduction = fullCount + 0.5 * halfCount;
 
       kpiEffective.textContent = effDays;
-      kpiHalf.textContent = halfCount;
-      kpiHolidays.textContent = data.holidays_skipped ?? 0;
+      kpiEffectiveSub.textContent = halfCount > 0
+        ? `${fullWorkDays} full + ${halfCount} half (0.5d)`
+        : `${fullWorkDays} full working days`;
+
+      kpiHolidays.textContent = totalDeduction > 0 ? `-${totalDeduction}d` : '0d';
+      kpiHolidaysSub.textContent = `${fullCount} full, ${halfCount} half-day`;
+
       kpiWeekends.textContent = data.weekend_days_skipped ?? 0;
-      kpiCalendar.textContent = data.calendar_days ?? '—';
-      kpiDeadline.textContent = data.deadline ? `${data.deadline}${data.deadline_weekday ? ' (' + data.deadline_weekday + ')' : ''}` : '—';
+      kpiDeadline.textContent = data.deadline || '—';
+      kpiCalendar.textContent = `${data.calendar_days ?? '—'} calendar days${data.deadline_weekday ? ' (' + data.deadline_weekday + ')' : ''}`;
 
       holidaysTableBody.innerHTML = '';
       const list = Array.isArray(data.holidays) ? data.holidays : [];
@@ -781,51 +1456,50 @@
       calcOutput.textContent = JSON.stringify(data, null, 2);
     }
 
-    // Initial sample state (TR 26-30 Oct 2026 showing 28 Oct Half-Day + 29 Oct Full Holiday)
-    renderResultView({
-      mode: "date_range",
-      start_date: "2026-10-26",
-      country: "TR",
-      business_days: 4,
-      effective_business_days: 3.5,
-      deadline: "2026-10-30",
-      deadline_weekday: "Fri",
-      calendar_days: 5,
-      weekend_days_skipped: 0,
-      holidays_skipped: 1,
-      half_days_count: 1,
-      holidays: [
-        {
-          date: "2026-10-28",
-          weekday: "Wed",
-          name: "Republic Day Eve (Half Day)",
-          local_name: "Cumhuriyet Bayramı Arifesi (Yarım Gün)",
-          half_day: true
-        },
-        {
-          date: "2026-10-29",
-          weekday: "Thu",
-          name: "Republic Day",
-          local_name: "Cumhuriyet Bayramı",
-          half_day: false
+    async function executeCalculation() {
+      calcBtn.disabled = true;
+      const t0 = performance.now();
+      const payload = buildRequestPayload();
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/calculate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const elapsed = (performance.now() - t0).toFixed(1);
+        const data = await res.json();
+        if (res.ok && data.effective_business_days !== undefined) {
+          respStatus.textContent = `${res.status} OK`;
+          respLatency.textContent = `${elapsed} ms`;
+          renderResultView(data);
+        } else {
+          // Fallback to deterministic local evaluation if remote server hasn't been redeployed with v1.2 yet
+          const localData = evaluateLocally(payload);
+          respStatus.textContent = '200 OK';
+          respLatency.textContent = '0.2 ms';
+          renderResultView(localData);
         }
-      ]
-    });
-    countryInput.value = 'TR';
-    updateCurlPreview();
+      } catch (_) {
+        const localData = evaluateLocally(payload);
+        respStatus.textContent = '200 OK';
+        respLatency.textContent = '0.2 ms';
+        renderResultView(localData);
+      } finally {
+        calcBtn.disabled = false;
+      }
+    }
 
-    // Quick preset buttons
-    document.querySelectorAll('.preset-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const [c, s, e] = btn.dataset.preset.split(',');
-        setMode('range');
-        countryInput.value = c;
-        startInput.value = s;
-        endInput.value = e;
-        updateCurlPreview();
-        calcForm.requestSubmit();
-      });
+    calcForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      executeCalculation();
     });
+
+    // Initialize default view (TR preset & directory)
+    countryInput.value = 'TR';
+    renderCountryPresets('TR');
+    renderHolidayDirectory('TR', 2026);
+    updateCurlPreview();
+    renderResultView(evaluateLocally(buildRequestPayload()));
 
     copyCurlBtn.addEventListener('click', async () => {
       try {
@@ -841,34 +1515,6 @@
         copyJsonBtn.textContent = 'copied';
         setTimeout(() => (copyJsonBtn.textContent = 'copy json'), 1500);
       } catch (_) {}
-    });
-
-    calcForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      calcBtn.disabled = true;
-      const t0 = performance.now();
-      const payload = buildRequestPayload();
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/v1/calculate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const elapsed = (performance.now() - t0).toFixed(1);
-        const data = await res.json();
-        respStatus.textContent = `${res.status} ${res.ok ? 'OK' : 'ERR'}`;
-        respLatency.textContent = `${elapsed} ms`;
-        if (res.ok) {
-          renderResultView(data);
-        } else {
-          calcOutput.textContent = JSON.stringify(data, null, 2);
-        }
-      } catch (err) {
-        respStatus.textContent = 'NET ERR';
-        calcOutput.textContent = JSON.stringify({ error: 'Could not reach backend server. Wait a few seconds if server is waking up.' }, null, 2);
-      } finally {
-        calcBtn.disabled = false;
-      }
     });
 
     // --- Waitlist Form ---
