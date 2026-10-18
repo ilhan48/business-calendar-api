@@ -17,7 +17,7 @@ Stop hand-rolling fragile holiday tables or maintaining complex calendar rules f
 
 We are currently onboarding early adopters with a **generous free tier**.
 
-👉 **[Join the Live Waitlist & Try the Live API Here →](https://private-3mjh.onrender.com)**
+👉 **[Join the Live Waitlist Here →](https://ilhan48.github.io/business-calendar-api/)**
 
 ---
 
@@ -92,4 +92,4 @@ The core Rust calculation engine and API server are maintained in a separate pri
 ## 📬 Contact & Early Access
 
 Want early access or have specific country/regional calendar requirements?  
-Sign up on the **[Live Waitlist](https://private-3mjh.onrender.com/#waitlist)** or open an issue in this repository to request a country!
+Sign up on the **[Live Waitlist](https://ilhan48.github.io/business-calendar-api/#waitlist)** or open an issue in this repository to request a country!
